@@ -18,6 +18,8 @@
 		EA52F22A25399820009286D4 /* TodoListUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F22925399820009286D4 /* TodoListUITests.swift */; };
 		EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F23C2539C088009286D4 /* MainCollectionViewCell.swift */; };
 		EA52F23F2539C088009286D4 /* MainCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F23D2539C088009286D4 /* MainCollectionViewCell.xib */; };
+		EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F263253B129D009286D4 /* CategoryViewController.swift */; };
+		EA52F266253B129D009286D4 /* CategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F264253B129D009286D4 /* CategoryViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +57,8 @@
 		EA52F22B25399820009286D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EA52F23C2539C088009286D4 /* MainCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCollectionViewCell.swift; sourceTree = "<group>"; };
 		EA52F23D2539C088009286D4 /* MainCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainCollectionViewCell.xib; sourceTree = "<group>"; };
+		EA52F263253B129D009286D4 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		EA52F264253B129D009286D4 /* CategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +144,8 @@
 			isa = PBXGroup;
 			children = (
 				EA52F2082539981D009286D4 /* ViewController.swift */,
+				EA52F263253B129D009286D4 /* CategoryViewController.swift */,
+				EA52F264253B129D009286D4 /* CategoryViewController.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -259,6 +265,7 @@
 				EA52F21425399820009286D4 /* LaunchScreen.storyboard in Resources */,
 				EA52F21125399820009286D4 /* Assets.xcassets in Resources */,
 				EA52F20C2539981D009286D4 /* Main.storyboard in Resources */,
+				EA52F266253B129D009286D4 /* CategoryViewController.xib in Resources */,
 				EA52F23F2539C088009286D4 /* MainCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -288,6 +295,7 @@
 				EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */,
 				EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */,
 				EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */,
+				EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */,
 				EA52F20F2539981D009286D4 /* TodoList.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
