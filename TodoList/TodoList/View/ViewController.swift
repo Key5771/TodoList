@@ -40,6 +40,7 @@ extension ViewController: UICollectionViewDataSource {
         
         item.layer.borderWidth = 1
         item.layer.borderColor = UIColor.black.cgColor
+        item.layer.cornerRadius = 20
         item.titleLabel.text = "Hello World"
         item.taskLabel.text = "Hello Swift"
         
