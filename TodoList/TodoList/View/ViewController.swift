@@ -25,6 +25,10 @@ class ViewController: UIViewController {
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let vc = CategoryViewController(nibName: "CategoryViewController", bundle: nil)
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
     }
 }
 
