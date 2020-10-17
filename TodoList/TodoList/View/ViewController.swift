@@ -16,6 +16,9 @@ class ViewController: UIViewController {
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.register(UINib(nibName: "MainCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "reuseCell")
+        
+        print("width: \(self.collectionView.frame.width)")
+        print("height: \(self.collectionView.frame.height)")
     }
 
 
@@ -37,6 +40,8 @@ extension ViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
+        cell.layer.borderWidth = 1
+        cell.layer.borderColor = UIColor.black.cgColor
         cell.titleLabel.text = "Hello World"
         cell.taskLabel.text = "Hello Swift"
         
@@ -46,8 +51,9 @@ extension ViewController: UICollectionViewDataSource {
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width
-        let height = width * 9 / 16 + 55.5
+        let width = self.collectionView.frame.width / 3
+        let height = width
+        
         return CGSize(width: width, height: height)
     }
 }
