@@ -10,6 +10,8 @@ import UIKit
 class ViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
+    var todoList: [TodoCategory] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,7 +36,7 @@ extension ViewController: UICollectionViewDelegate {
 
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
+        return todoList.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -42,11 +44,8 @@ extension ViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        item.layer.borderWidth = 1
-        item.layer.borderColor = UIColor.black.cgColor
-        item.layer.cornerRadius = 20
-        item.titleLabel.text = "Hello World"
-        item.taskLabel.text = "Hello Swift"
+        item.titleLabel.text = "Create"
+        item.taskLabel.text = ""
         
         return item
     }
