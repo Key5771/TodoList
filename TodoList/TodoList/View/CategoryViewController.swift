@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class CategoryViewController: UIViewController {
 
@@ -25,6 +26,25 @@ class CategoryViewController: UIViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+    }
+    
+    
+    private func save(name: String) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        
+        guard let entity = NSEntityDescription.entity(forEntityName: "TodoCategory", in: managedContext) else { return }
+        let category = NSManagedObject(entity: entity, insertInto: managedContext)
+        
+        category.setValue(name, forKey: "name")
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
     }
     
 
