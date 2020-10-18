@@ -9,7 +9,10 @@ import UIKit
 import CoreData
 
 class CategoryViewController: UIViewController {
-
+    @IBOutlet weak var categoryNameTextField: UITextField!
+    
+    var todoCateogry: TodoCategory?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -21,7 +24,28 @@ class CategoryViewController: UIViewController {
     }
     
     @IBAction func saveButton(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        guard let category = categoryNameTextField.text else {
+            let alert = UIAlertController(title: "오류", message: "카테고리를 입력해주세요.", preferredStyle: .alert)
+            let okButton = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alert.addAction(okButton)
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+        let alert = UIAlertController(title: "저장", message: "저장하시겠습니까?", preferredStyle: .alert)
+        let okButton = UIAlertAction(title: "확인", style: .default) { (_) in
+            if self.todoCateogry != nil {
+                
+            } else {
+                self.save(name: category)
+            }
+            self.dismiss(animated: true, completion: nil)
+        }
+        let cancelButton = UIAlertAction(title: "취소", style: .default, handler: nil)
+        
+        alert.addAction(cancelButton)
+        alert.addAction(okButton)
+        present(alert, animated: true, completion: nil)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
