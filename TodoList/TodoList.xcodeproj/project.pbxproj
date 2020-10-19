@@ -20,7 +20,6 @@
 		EA52F23F2539C088009286D4 /* MainCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F23D2539C088009286D4 /* MainCollectionViewCell.xib */; };
 		EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F263253B129D009286D4 /* CategoryViewController.swift */; };
 		EA52F266253B129D009286D4 /* CategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F264253B129D009286D4 /* CategoryViewController.xib */; };
-		EA52F26C253B1842009286D4 /* TodoCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F26B253B1842009286D4 /* TodoCategory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,7 +59,6 @@
 		EA52F23D2539C088009286D4 /* MainCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainCollectionViewCell.xib; sourceTree = "<group>"; };
 		EA52F263253B129D009286D4 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		EA52F264253B129D009286D4 /* CategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryViewController.xib; sourceTree = "<group>"; };
-		EA52F26B253B1842009286D4 /* TodoCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoCategory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,7 +163,6 @@
 		EA52F26A253B181E009286D4 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				EA52F26B253B1842009286D4 /* TodoCategory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -303,7 +300,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA52F2092539981D009286D4 /* ViewController.swift in Sources */,
-				EA52F26C253B1842009286D4 /* TodoCategory.swift in Sources */,
 				EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */,
 				EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */,
 				EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */,

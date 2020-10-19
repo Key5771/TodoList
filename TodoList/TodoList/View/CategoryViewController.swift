@@ -25,6 +25,7 @@ class CategoryViewController: UIViewController {
     
     @IBAction func saveButton(_ sender: Any) {
         guard let category = categoryNameTextField.text else { return }
+        let date = Date()
         
         if category == "" {
             let alert = UIAlertController(title: "오류", message: "카테고리를 입력해주세요.", preferredStyle: .alert)
@@ -37,7 +38,7 @@ class CategoryViewController: UIViewController {
                 if self.todoCateogry != nil {
                     
                 } else {
-                    self.save(name: category)
+                    self.save(name: category, date: date)
                 }
                 self.dismiss(animated: true, completion: nil)
             }
@@ -55,7 +56,7 @@ class CategoryViewController: UIViewController {
     }
     
     
-    private func save(name: String) {
+    private func save(name: String, date: Date) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         
         let managedContext = appDelegate.persistentContainer.viewContext
@@ -65,6 +66,7 @@ class CategoryViewController: UIViewController {
         let category = NSManagedObject(entity: entity, insertInto: managedContext)
         
         category.setValue(name, forKey: "name")
+        category.setValue(date, forKey: "createDate")
         
         do {
             try managedContext.save()
