@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var todoList: [TodoCategory] = []
+    private var controller: NSFetchedResultsController<NSManagedObject>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,34 @@ class ViewController: UIViewController {
         
         print("width: \(self.collectionView.frame.width)")
         print("height: \(self.collectionView.frame.height)")
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        loadData()
+        self.collectionView.reloadData()
+    }
+    
+    private func setDefaultAttribute() {
+        let text = "Create"
+        let date = Date()
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        
+        guard let entity = NSEntityDescription.entity(forEntityName: "TodoCategory", in: managedContext) else { return }
+        let category = NSManagedObject(entity: entity, insertInto: managedContext)
+        
+        category.setValue(text, forKey: "name")
+        category.setValue(date, forKey: "createDate")
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Fatal Error: \(error), \(error.userInfo)")
+        }
     }
 }
 
@@ -36,7 +65,12 @@ extension ViewController: UICollectionViewDelegate {
 
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return todoList.count + 1
+        guard let sections = self.controller?.sections else {
+            fatalError("No sections in fetchedResultsController")
+        }
+        
+        let sectionInfo = sections[section]
+        return sectionInfo.numberOfObjects
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -44,8 +78,14 @@ extension ViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        item.titleLabel.text = "Create"
-        item.taskLabel.text = ""
+        if let content = controller?.object(at: indexPath) as? TodoCategory {
+            item.titleLabel.text = content.name
+            if item.titleLabel.text == "Create" {
+                item.taskLabel.text = ""
+            } else {
+                item.taskLabel.text = "1 task"
+            }
+        }
         
         return item
     }
@@ -67,5 +107,34 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 5
+    }
+}
+
+extension ViewController: NSFetchedResultsControllerDelegate {
+    private func loadData() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "TodoCategory")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
+        
+        controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedContext, sectionNameKeyPath: nil, cacheName: nil)
+        controller?.delegate = self
+        
+        do {
+            try controller?.performFetch()
+        } catch let error as NSError {
+            print("Could not Fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        self.collectionView.performBatchUpdates(nil, completion: nil)
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        self.collectionView.performBatchUpdates(nil, completion: nil)
     }
 }
