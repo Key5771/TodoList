@@ -10,6 +10,7 @@ import CoreData
 
 class ViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var createButton: UIButton!
     
     private var controller: NSFetchedResultsController<NSManagedObject>?
     
@@ -23,6 +24,7 @@ class ViewController: UIViewController {
         print("width: \(self.collectionView.frame.width)")
         print("height: \(self.collectionView.frame.height)")
         
+        setCreateView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -30,38 +32,42 @@ class ViewController: UIViewController {
         self.collectionView.reloadData()
     }
     
-    private func setDefaultAttribute() {
-        let text = "Create"
-        let date = Date()
+    // MARK: - CreateView Layout Setting
+    private func setCreateView() {
+        // createButton layer effect
+        createButton.layer.cornerRadius = 20
+        createButton.layer.borderWidth = 1
+        createButton.layer.borderColor = UIColor.clear.cgColor
+        createButton.layer.backgroundColor = UIColor.white.cgColor
         
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        
-        guard let entity = NSEntityDescription.entity(forEntityName: "TodoCategory", in: managedContext) else { return }
-        let category = NSManagedObject(entity: entity, insertInto: managedContext)
-        
-        category.setValue(text, forKey: "name")
-        category.setValue(date, forKey: "createDate")
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Fatal Error: \(error), \(error.userInfo)")
-        }
+        // createButton shadow effect
+        createButton.layer.shadowColor = UIColor.gray.cgColor
+        createButton.layer.shadowOffset = CGSize(width: 0, height: 0.0)
+        createButton.layer.shadowRadius = 6.0
+        createButton.layer.shadowOpacity = 0.6
+        createButton.layer.cornerRadius = 15.0
+        createButton.layer.masksToBounds = false
+        createButton.layer.shadowPath = UIBezierPath(rect: createButton.bounds).cgPath
     }
+    
+    // MARK: - CreateView Action
+    @IBAction func create(_ sender: Any) {
+        let vc = CategoryViewController(nibName: "CategoryViewController", bundle: nil)
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
+    }
+    
 }
 
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.collectionView.deselectItem(at: indexPath, animated: true)
         
-        if indexPath.section == 0 {
-            let vc = CategoryViewController(nibName: "CategoryViewController", bundle: nil)
-            vc.modalPresentationStyle = .fullScreen
-            self.present(vc, animated: true, completion: nil)
-        }
+//        if indexPath.section == 0 {
+//            let vc = CategoryViewController(nibName: "CategoryViewController", bundle: nil)
+//            vc.modalPresentationStyle = .fullScreen
+//            self.present(vc, animated: true, completion: nil)
+//        }
     }
 }
 

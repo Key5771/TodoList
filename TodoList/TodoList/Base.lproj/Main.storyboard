@@ -23,7 +23,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="xHf-Xd-NNK">
-                                <rect key="frame" x="30" y="197.5" width="354" height="664.5"/>
+                                <rect key="frame" x="30" y="277.5" width="354" height="584.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="4tm-Jv-wuh">
                                     <size key="itemSize" width="128" height="128"/>
@@ -33,27 +33,42 @@
                                 </collectionViewFlowLayout>
                                 <cells/>
                             </collectionView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qfp-ou-SOk">
+                                <rect key="frame" x="60" y="197.5" width="294" height="60"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <state key="normal" title="Create">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="create:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vhS-KD-til"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qfp-ou-SOk" secondAttribute="trailing" constant="60" id="89Q-9O-xGl"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="xHf-Xd-NNK" secondAttribute="trailing" constant="30" id="8Up-XY-CsJ"/>
                             <constraint firstItem="xHf-Xd-NNK" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="Da9-gQ-L9x"/>
-                            <constraint firstItem="xHf-Xd-NNK" firstAttribute="top" secondItem="Si2-Fs-NYB" secondAttribute="bottom" constant="20" id="LQ2-gG-c9S"/>
+                            <constraint firstItem="xHf-Xd-NNK" firstAttribute="top" secondItem="Si2-Fs-NYB" secondAttribute="bottom" constant="100" id="LQ2-gG-c9S"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="xHf-Xd-NNK" secondAttribute="bottom" id="O0e-FT-qkx"/>
+                            <constraint firstItem="qfp-ou-SOk" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="60" id="cpE-Hw-1g1"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Si2-Fs-NYB" secondAttribute="trailing" constant="60" id="fWu-x4-xZY"/>
                             <constraint firstItem="Si2-Fs-NYB" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="100" id="gwV-1d-GFa"/>
                             <constraint firstItem="Si2-Fs-NYB" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="60" id="ii9-FN-L4l"/>
+                            <constraint firstItem="xHf-Xd-NNK" firstAttribute="top" secondItem="qfp-ou-SOk" secondAttribute="bottom" constant="20" id="jno-Ov-OLO"/>
+                            <constraint firstItem="qfp-ou-SOk" firstAttribute="top" secondItem="Si2-Fs-NYB" secondAttribute="bottom" constant="20" id="w17-xP-ZLr"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="5yu-0o-iOD"/>
                     <connections>
                         <outlet property="collectionView" destination="xHf-Xd-NNK" id="ukm-kC-xtN"/>
+                        <outlet property="createButton" destination="qfp-ou-SOk" id="QfI-mx-mQi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="97" y="94"/>
+            <point key="canvasLocation" x="95.652173913043484" y="93.75"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="fbz-Aw-7hB">
