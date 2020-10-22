@@ -23,7 +23,6 @@ class ViewController: UIViewController {
         print("width: \(self.collectionView.frame.width)")
         print("height: \(self.collectionView.frame.height)")
         
-        setDefaultAttribute()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,45 +66,16 @@ extension ViewController: UICollectionViewDelegate {
 }
 
 extension ViewController: UICollectionViewDataSource {
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-        } else {
-            guard let sections = self.controller?.sections else {
-                fatalError("No sections in fetchedResultsController")
-            }
-
-            let sectionInfo = sections[section]
-            return sectionInfo.numberOfObjects
+        guard let sections = self.controller?.sections else {
+            fatalError("No sections in fetchedResultsController")
         }
+        
+        let sectionInfo = sections[section]
+        return sectionInfo.numberOfObjects
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        if indexPath.section == 0 {
-//            guard let item = collectionView.dequeueReusableCell(withReuseIdentifier: "createCell", for: indexPath) as? CreateCollectionViewCell else {
-//                return UICollectionViewCell()
-//            }
-//
-//            item.createLabel.text = "Create"
-//
-//            return item
-//        } else {
-//            guard let item = collectionView.dequeueReusableCell(withReuseIdentifier: "reuseCell", for: indexPath) as? MainCollectionViewCell else {
-//                return UICollectionViewCell()
-//            }
-//
-//            if let content = controller?.object(at: indexPath) as? TodoCategory {
-//                item.titleLabel.text = content.name
-//                item.taskLabel.text = "1 task"
-//            }
-//
-//            return item
-//        }
-        
         guard let item = collectionView.dequeueReusableCell(withReuseIdentifier: "reuseCell", for: indexPath) as? MainCollectionViewCell else {
             return UICollectionViewCell()
         }
@@ -113,6 +83,9 @@ extension ViewController: UICollectionViewDataSource {
         if let content = controller?.object(at: indexPath) as? TodoCategory {
             item.titleLabel.text = content.name
             item.taskLabel.text = "1 task"
+        } else {
+            item.titleLabel.text = "TEST"
+            item.taskLabel.text = "TEST"
         }
         
         return item
@@ -126,12 +99,6 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let screenSize = UIScreen.main.bounds
-        
-//        if indexPath.section == 0 {
-//            return CGSize(width: screenSize.width - 100, height: screenSize.width / 3)
-//        } else {
-//            return CGSize(width: screenSize.width / 3, height: screenSize.width / 3)
-//        }
         return CGSize(width: screenSize.width / 3, height: screenSize.width / 3)
     }
     
