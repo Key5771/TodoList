@@ -109,8 +109,16 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let screenSize = UIScreen.main.bounds
-        return CGSize(width: screenSize.width / 3, height: screenSize.width / 3)
+//        let screenSize = UIScreen.main.bounds
+        let width = self.view.frame.width
+        let height = self.view.frame.height
+        
+        if width < height {
+            return CGSize(width: width / 3, height: width / 3)
+        } else {
+            return CGSize(width: height / 3, height: height / 3)
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
