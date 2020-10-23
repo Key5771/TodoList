@@ -28,6 +28,8 @@
 		EAFB86FD2542A29C0037390E /* ContentTableViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */; };
 		EAFB87042542A7570037390E /* ContentTableViewFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB87022542A7570037390E /* ContentTableViewFooter.swift */; };
 		EAFB87052542A7570037390E /* ContentTableViewFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB87032542A7570037390E /* ContentTableViewFooter.xib */; };
+		EAFB870B2542BAAE0037390E /* AddTodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB87092542BAAD0037390E /* AddTodoViewController.swift */; };
+		EAFB870C2542BAAE0037390E /* AddTodoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB870A2542BAAD0037390E /* AddTodoViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +77,8 @@
 		EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewHeader.xib; sourceTree = "<group>"; };
 		EAFB87022542A7570037390E /* ContentTableViewFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewFooter.swift; sourceTree = "<group>"; };
 		EAFB87032542A7570037390E /* ContentTableViewFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewFooter.xib; sourceTree = "<group>"; };
+		EAFB87092542BAAD0037390E /* AddTodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTodoViewController.swift; sourceTree = "<group>"; };
+		EAFB870A2542BAAD0037390E /* AddTodoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTodoViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +169,8 @@
 				EA52F264253B129D009286D4 /* CategoryViewController.xib */,
 				EA52F2D12541736C009286D4 /* ContentViewController.swift */,
 				EA52F2D22541736C009286D4 /* ContentViewController.xib */,
+				EAFB87092542BAAD0037390E /* AddTodoViewController.swift */,
+				EAFB870A2542BAAD0037390E /* AddTodoViewController.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -326,6 +332,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAFB870C2542BAAE0037390E /* AddTodoViewController.xib in Resources */,
 				EA52F21425399820009286D4 /* LaunchScreen.storyboard in Resources */,
 				EAFB86C925428C640037390E /* ContentTableViewCell.xib in Resources */,
 				EAFB86FD2542A29C0037390E /* ContentTableViewHeader.xib in Resources */,
@@ -364,6 +371,7 @@
 				EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */,
 				EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */,
 				EAFB87042542A7570037390E /* ContentTableViewFooter.swift in Sources */,
+				EAFB870B2542BAAE0037390E /* AddTodoViewController.swift in Sources */,
 				EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */,
 				EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */,
 				EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */,

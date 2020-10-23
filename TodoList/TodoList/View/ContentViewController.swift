@@ -24,6 +24,7 @@ class ContentViewController: UIViewController {
         self.tableView.dataSource = self
         
         self.tableView.register(UINib(nibName: "ContentTableViewHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: "contentHeader")
+        self.tableView.register(UINib(nibName: "ContentTableViewFooter", bundle: nil), forHeaderFooterViewReuseIdentifier: "contentFooter")
         self.tableView.register(UINib(nibName: "ContentTableViewCell", bundle: nil), forCellReuseIdentifier: "contentCell")
     }
     
@@ -40,13 +41,16 @@ class ContentViewController: UIViewController {
 
 }
 
+// MARK: - UITableViewDelegate
 extension ContentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
+// MARK: - UITableViewDataSource
 extension ContentViewController: UITableViewDataSource {
+    // MARK: - TableView Header
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "contentHeader") as? ContentTableViewHeader else {
             return UIView()
@@ -71,6 +75,28 @@ extension ContentViewController: UITableViewDataSource {
         }
     }
     
+    // MARK: - TableView Footer
+    @objc func createTodo() {
+        let vc = AddTodoViewController()
+        vc.category = self.categoryName
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        guard let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: "contentFooter") as? ContentTableViewFooter else {
+            return UIView()
+        }
+        
+        footer.createTodoButton.addTarget(self, action: #selector(createTodo), for: .touchUpInside)
+        
+        return footer
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 30
+    }
+    
+    // MARK: - TableView Cell
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let sections = self.controller?.sections else {
             fatalError("No sections in fetchedResultsController at ContentViewController")
@@ -96,6 +122,7 @@ extension ContentViewController: UITableViewDataSource {
     
 }
 
+// MARK: - NSFetchedResultsControllerDelegate
 extension ContentViewController: NSFetchedResultsControllerDelegate {
     private func loadData() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
@@ -113,6 +140,26 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
             try controller?.performFetch()
         } catch let error as NSError {
             print("Could not Content Fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
+    private func saveDate(categoryName: String, todoName: String, date: Date) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        
+        guard let entity = NSEntityDescription.entity(forEntityName: "Todo", in: managedContext) else { return }
+        let todo = NSManagedObject(entity: entity, insertInto: managedContext)
+        
+        todo.setValue(categoryName, forKey: "categoryName")
+        todo.setValue(todoName, forKey: "todoName")
+        todo.setValue(date, forKey: "createDate")
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save Todo. \(error), \(error.userInfo)")
         }
     }
     
