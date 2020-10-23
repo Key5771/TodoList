@@ -30,6 +30,9 @@ class ContentViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         loadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         self.tableView.reloadData()
     }
 
@@ -77,7 +80,7 @@ extension ContentViewController: UITableViewDataSource {
     
     // MARK: - TableView Footer
     @objc func createTodo() {
-        let vc = AddTodoViewController()
+        let vc = AddTodoViewController(nibName: "AddTodoViewController", bundle: nil)
         vc.category = self.categoryName
         self.navigationController?.pushViewController(vc, animated: true)
     }
@@ -87,24 +90,26 @@ extension ContentViewController: UITableViewDataSource {
             return UIView()
         }
         
-        footer.createTodoButton.addTarget(self, action: #selector(createTodo), for: .touchUpInside)
+//        footer.createTodoButton.addTarget(self, action: #selector(createTodo), for: .touchUpInside)
         
         return footer
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 30
+        return 50
     }
     
     // MARK: - TableView Cell
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let sections = self.controller?.sections else {
-            fatalError("No sections in fetchedResultsController at ContentViewController")
-        }
+//        guard let sections = self.controller?.sections else {
+//            fatalError("No sections in fetchedResultsController at ContentViewController")
+//        }
+//
+//        let sectionInfo = sections[section]
+//        self.taskCount = sectionInfo.numberOfObjects
+//        return sectionInfo.numberOfObjects
         
-        let sectionInfo = sections[section]
-        self.taskCount = sectionInfo.numberOfObjects
-        return sectionInfo.numberOfObjects
+        return 3
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -114,6 +119,8 @@ extension ContentViewController: UITableViewDataSource {
         
         if let content = controller?.object(at: indexPath) as? Todo {
             cell.todoLabel.text = content.todoName
+        } else {
+            cell.todoLabel.text = "TEST"
         }
         
         return cell
@@ -143,31 +150,11 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
         }
     }
     
-    private func saveDate(categoryName: String, todoName: String, date: Date) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        
-        guard let entity = NSEntityDescription.entity(forEntityName: "Todo", in: managedContext) else { return }
-        let todo = NSManagedObject(entity: entity, insertInto: managedContext)
-        
-        todo.setValue(categoryName, forKey: "categoryName")
-        todo.setValue(todoName, forKey: "todoName")
-        todo.setValue(date, forKey: "createDate")
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save Todo. \(error), \(error.userInfo)")
-        }
-    }
-    
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.tableView.performBatchUpdates(nil, completion: nil)
+        self.tableView.beginUpdates()
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.tableView.performBatchUpdates(nil, completion: nil)
+        self.tableView.endUpdates()
     }
 }
