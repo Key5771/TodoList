@@ -12,6 +12,7 @@
             <connections>
                 <outlet property="categoryLabel" destination="agN-Nz-bDS" id="Qkd-GR-q2P"/>
                 <outlet property="swipeGesture" destination="lEA-bl-ySc" id="jb9-Zx-0kR"/>
+                <outlet property="tableView" destination="wye-BU-5wo" id="yOu-dL-OXs"/>
                 <outlet property="taskLabel" destination="cbj-uY-g3w" id="5fU-oM-MLg"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -34,7 +35,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wye-BU-5wo">
-                    <rect key="frame" x="60" y="238" width="294" height="622"/>
+                    <rect key="frame" x="15" y="238" width="384" height="622"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </tableView>
             </subviews>
@@ -45,9 +46,9 @@
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="agN-Nz-bDS" secondAttribute="trailing" constant="60" id="BOK-QA-oWB"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="wye-BU-5wo" secondAttribute="bottom" constant="2" id="HMr-vF-yUc"/>
                 <constraint firstItem="agN-Nz-bDS" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="100" id="LPI-Py-TOV"/>
-                <constraint firstItem="wye-BU-5wo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="60" id="Phf-P1-8aK"/>
+                <constraint firstItem="wye-BU-5wo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="15" id="Phf-P1-8aK"/>
                 <constraint firstItem="agN-Nz-bDS" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="60" id="UxW-RZ-6Mg"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="wye-BU-5wo" secondAttribute="trailing" constant="60" id="YJg-GJ-m98"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="wye-BU-5wo" secondAttribute="trailing" constant="15" id="YJg-GJ-m98"/>
                 <constraint firstItem="wye-BU-5wo" firstAttribute="top" secondItem="cbj-uY-g3w" secondAttribute="bottom" constant="20" id="hAo-tt-Vzq"/>
                 <constraint firstItem="cbj-uY-g3w" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="60" id="o5x-eX-ufd"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="cbj-uY-g3w" secondAttribute="trailing" constant="60" id="qiB-C3-9ft"/>
