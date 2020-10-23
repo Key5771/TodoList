@@ -16,11 +16,11 @@ class ContentTableViewFooter: UITableViewHeaderFooterView {
     }
     
     override func layoutSubviews() {
-        self.layer.cornerRadius = 20
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.clear.cgColor
-        self.layer.masksToBounds = true
-        self.layer.backgroundColor = UIColor.white.cgColor
+        self.createTodoButton.layer.cornerRadius = 20
+        self.createTodoButton.layer.borderWidth = 1
+        self.createTodoButton.layer.borderColor = UIColor.clear.cgColor
+        self.createTodoButton.layer.masksToBounds = true
+        self.createTodoButton.layer.backgroundColor = UIColor.white.cgColor
     }
     
 }
