@@ -8,22 +8,23 @@
 import UIKit
 
 class ContentViewController: UIViewController {
-
+    @IBOutlet weak var categoryLabel: UILabel!
+    @IBOutlet weak var taskLabel: UILabel!
+    @IBOutlet var swipeGesture: UISwipeGestureRecognizer!
+    
+    var categoryName: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        categoryLabel.text = categoryName
     }
 
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @IBAction func leftSwipe(_ sender: Any) {
+        if swipeGesture.direction == .right {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
-    */
 
 }
