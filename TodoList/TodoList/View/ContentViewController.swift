@@ -16,12 +16,19 @@ class ContentViewController: UIViewController {
     @IBOutlet var swipeGesture: UISwipeGestureRecognizer!
     
     var categoryName: String?
+    private var taskCount: Int?
     private var controller: NSFetchedResultsController<NSManagedObject>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         categoryLabel.text = categoryName
+        if let count = taskCount {
+            self.taskLabel.text = "\(count)"
+        } else {
+            self.taskLabel.text = "0 task"
+        }
+        
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.register(UINib(nibName: "ContentTableViewCell", bundle: nil), forCellReuseIdentifier: "contentCell")
@@ -29,6 +36,7 @@ class ContentViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         loadData()
+        self.tableView.reloadData()
     }
 
     @IBAction func leftSwipe(_ sender: Any) {
@@ -47,7 +55,13 @@ extension ContentViewController: UITableViewDelegate {
 
 extension ContentViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        guard let sections = self.controller?.sections else {
+            fatalError("No sections in fetchedResultsController at ContentViewController")
+        }
+        
+        let sectionInfo = sections[section]
+        self.taskCount = sectionInfo.numberOfObjects
+        return sectionInfo.numberOfObjects
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -55,7 +69,9 @@ extension ContentViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        cell.todoLabel.text = "TEST"
+        if let content = controller?.object(at: indexPath) as? Todo {
+            cell.todoLabel.text = content.todoName
+        }
         
         return cell
     }

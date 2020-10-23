@@ -164,6 +164,7 @@
 		EA52F23B2539C065009286D4 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				EAFB86CD25429FF40037390E /* Header */,
 				EAFB86C525428C430037390E /* TableViewCell */,
 				EAFB86C425428C340037390E /* CollectionViewCell */,
 			);
@@ -193,6 +194,13 @@
 				EAFB86C725428C640037390E /* ContentTableViewCell.xib */,
 			);
 			path = TableViewCell;
+			sourceTree = "<group>";
+		};
+		EAFB86CD25429FF40037390E /* Header */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Header;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
