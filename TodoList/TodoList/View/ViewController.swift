@@ -38,16 +38,17 @@ class ViewController: UIViewController {
         createButton.layer.cornerRadius = 20
         createButton.layer.borderWidth = 1
         createButton.layer.borderColor = UIColor.clear.cgColor
+        createButton.layer.masksToBounds = true
         createButton.layer.backgroundColor = UIColor.white.cgColor
         
         // createButton shadow effect
-        createButton.layer.shadowColor = UIColor.gray.cgColor
-        createButton.layer.shadowOffset = CGSize(width: 0, height: 0.0)
-        createButton.layer.shadowRadius = 6.0
-        createButton.layer.shadowOpacity = 0.6
-        createButton.layer.cornerRadius = 15.0
-        createButton.layer.masksToBounds = false
-        createButton.layer.shadowPath = UIBezierPath(rect: createButton.bounds).cgPath
+//        createButton.layer.shadowColor = UIColor.gray.cgColor
+//        createButton.layer.shadowOffset = CGSize(width: 0, height: 0.0)
+//        createButton.layer.shadowRadius = 4.0
+//        createButton.layer.shadowOpacity = 0.6
+//        createButton.layer.cornerRadius = 20
+//        createButton.layer.masksToBounds = false
+//        createButton.layer.shadowPath = UIBezierPath(rect: createButton.bounds).cgPath
     }
     
     // MARK: - CreateView Action
@@ -63,6 +64,10 @@ extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.collectionView.deselectItem(at: indexPath, animated: true)
         
+        guard let content = controller?.object(at: indexPath) as? TodoCategory else { return }
+        let vc = ContentViewController(nibName: "ContentViewController", bundle: nil)
+        vc.categoryName = content.name
+        self.navigationController?.pushViewController(vc, animated: true)
 //        if indexPath.section == 0 {
 //            let vc = CategoryViewController(nibName: "CategoryViewController", bundle: nil)
 //            vc.modalPresentationStyle = .fullScreen
