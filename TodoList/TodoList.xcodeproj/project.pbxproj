@@ -24,6 +24,8 @@
 		EA52F2D42541736D009286D4 /* ContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F2D22541736C009286D4 /* ContentViewController.xib */; };
 		EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB86C625428C640037390E /* ContentTableViewCell.swift */; };
 		EAFB86C925428C640037390E /* ContentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB86C725428C640037390E /* ContentTableViewCell.xib */; };
+		EAFB86FC2542A29C0037390E /* ContentTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB86FA2542A29C0037390E /* ContentTableViewHeader.swift */; };
+		EAFB86FD2542A29C0037390E /* ContentTableViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +69,8 @@
 		EA52F2D22541736C009286D4 /* ContentViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentViewController.xib; sourceTree = "<group>"; };
 		EAFB86C625428C640037390E /* ContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewCell.swift; sourceTree = "<group>"; };
 		EAFB86C725428C640037390E /* ContentTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewCell.xib; sourceTree = "<group>"; };
+		EAFB86FA2542A29C0037390E /* ContentTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewHeader.swift; sourceTree = "<group>"; };
+		EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewHeader.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +203,8 @@
 		EAFB86CD25429FF40037390E /* Header */ = {
 			isa = PBXGroup;
 			children = (
+				EAFB86FA2542A29C0037390E /* ContentTableViewHeader.swift */,
+				EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */,
 			);
 			path = Header;
 			sourceTree = "<group>";
@@ -308,6 +314,7 @@
 			files = (
 				EA52F21425399820009286D4 /* LaunchScreen.storyboard in Resources */,
 				EAFB86C925428C640037390E /* ContentTableViewCell.xib in Resources */,
+				EAFB86FD2542A29C0037390E /* ContentTableViewHeader.xib in Resources */,
 				EA52F21125399820009286D4 /* Assets.xcassets in Resources */,
 				EA52F2D42541736D009286D4 /* ContentViewController.xib in Resources */,
 				EA52F20C2539981D009286D4 /* Main.storyboard in Resources */,
@@ -338,6 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA52F2092539981D009286D4 /* ViewController.swift in Sources */,
+				EAFB86FC2542A29C0037390E /* ContentTableViewHeader.swift in Sources */,
 				EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */,
 				EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */,
 				EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */,

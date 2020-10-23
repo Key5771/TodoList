@@ -9,8 +9,6 @@ import UIKit
 import CoreData
 
 class ContentViewController: UIViewController {
-    @IBOutlet weak var categoryLabel: UILabel!
-    @IBOutlet weak var taskLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet var swipeGesture: UISwipeGestureRecognizer!
@@ -21,16 +19,11 @@ class ContentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        categoryLabel.text = categoryName
-        if let count = taskCount {
-            self.taskLabel.text = "\(count)"
-        } else {
-            self.taskLabel.text = "0 task"
-        }
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        
+        self.tableView.register(UINib(nibName: "ContentTableViewHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: "contentHeader")
         self.tableView.register(UINib(nibName: "ContentTableViewCell", bundle: nil), forCellReuseIdentifier: "contentCell")
     }
     
@@ -54,6 +47,30 @@ extension ContentViewController: UITableViewDelegate {
 }
 
 extension ContentViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "contentHeader") as? ContentTableViewHeader else {
+            return UIView()
+        }
+        
+        header.categoryLabel.text = categoryName
+        if let count = taskCount {
+            header.taskLabel.text = "\(count) task"
+        }
+        
+        return header
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let width = self.view.frame.width
+        let height = self.view.frame.height
+        
+        if width < height {
+            return height / 6
+        } else {
+            return width / 5
+        }
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let sections = self.controller?.sections else {
             fatalError("No sections in fetchedResultsController at ContentViewController")
