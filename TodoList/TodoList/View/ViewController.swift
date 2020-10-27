@@ -21,9 +21,6 @@ class ViewController: UIViewController {
         self.collectionView.dataSource = self
         self.collectionView.register(UINib(nibName: "MainCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "reuseCell")
         
-        print("width: \(self.collectionView.frame.width)")
-        print("height: \(self.collectionView.frame.height)")
-        
         setCreateView()
     }
     
@@ -40,15 +37,6 @@ class ViewController: UIViewController {
         createButton.layer.borderColor = UIColor.clear.cgColor
         createButton.layer.masksToBounds = true
         createButton.layer.backgroundColor = UIColor.white.cgColor
-        
-        // createButton shadow effect
-//        createButton.layer.shadowColor = UIColor.gray.cgColor
-//        createButton.layer.shadowOffset = CGSize(width: 0, height: 0.0)
-//        createButton.layer.shadowRadius = 4.0
-//        createButton.layer.shadowOpacity = 0.6
-//        createButton.layer.cornerRadius = 20
-//        createButton.layer.masksToBounds = false
-//        createButton.layer.shadowPath = UIBezierPath(rect: createButton.bounds).cgPath
     }
     
     // MARK: - CreateView Action
@@ -68,11 +56,6 @@ extension ViewController: UICollectionViewDelegate {
         let vc = ContentViewController(nibName: "ContentViewController", bundle: nil)
         vc.categoryName = content.name
         self.navigationController?.pushViewController(vc, animated: true)
-//        if indexPath.section == 0 {
-//            let vc = CategoryViewController(nibName: "CategoryViewController", bundle: nil)
-//            vc.modalPresentationStyle = .fullScreen
-//            self.present(vc, animated: true, completion: nil)
-//        }
     }
 }
 
@@ -109,7 +92,6 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        let screenSize = UIScreen.main.bounds
         let width = self.view.frame.width
         let height = self.view.frame.height
         
