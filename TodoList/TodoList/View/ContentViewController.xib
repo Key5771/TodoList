@@ -10,8 +10,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ContentViewController" customModule="TodoList" customModuleProvider="target">
             <connections>
+                <outlet property="categoryLabel" destination="VJ3-oT-ILo" id="HaZ-6j-15d"/>
+                <outlet property="createButton" destination="gvl-Y4-Zqx" id="e3R-tC-nWT"/>
                 <outlet property="swipeGesture" destination="lEA-bl-ySc" id="jb9-Zx-0kR"/>
                 <outlet property="tableView" destination="wye-BU-5wo" id="yOu-dL-OXs"/>
+                <outlet property="taskLabel" destination="6ZU-8P-Fcc" id="4Bj-1q-maH"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -21,18 +24,49 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wye-BU-5wo">
-                    <rect key="frame" x="15" y="44" width="384" height="816"/>
+                    <rect key="frame" x="15" y="277.5" width="384" height="582.5"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </tableView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VJ3-oT-ILo">
+                    <rect key="frame" x="60" y="144" width="294" height="33.5"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gvl-Y4-Zqx">
+                    <rect key="frame" x="60" y="221.5" width="294" height="36"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                    <state key="normal" title="Create">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <connections>
+                        <action selector="createTodo:" destination="-1" eventType="touchUpInside" id="Bfx-LM-JnN"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ZU-8P-Fcc">
+                    <rect key="frame" x="60" y="197.5" width="294" height="18"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <gestureRecognizers/>
             <constraints>
+                <constraint firstItem="6ZU-8P-Fcc" firstAttribute="top" secondItem="VJ3-oT-ILo" secondAttribute="bottom" constant="20" id="7L7-hA-1VM"/>
+                <constraint firstItem="VJ3-oT-ILo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="60" id="81z-yr-qmp"/>
+                <constraint firstItem="gvl-Y4-Zqx" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="60" id="GXs-ee-mkI"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="wye-BU-5wo" secondAttribute="bottom" constant="2" id="HMr-vF-yUc"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="gvl-Y4-Zqx" secondAttribute="trailing" constant="60" id="LY8-aG-fYA"/>
                 <constraint firstItem="wye-BU-5wo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="15" id="Phf-P1-8aK"/>
-                <constraint firstItem="wye-BU-5wo" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="T9U-Je-49I"/>
+                <constraint firstItem="wye-BU-5wo" firstAttribute="top" secondItem="VJ3-oT-ILo" secondAttribute="bottom" constant="100" id="T9U-Je-49I"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="wye-BU-5wo" secondAttribute="trailing" constant="15" id="YJg-GJ-m98"/>
+                <constraint firstItem="VJ3-oT-ILo" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="100" id="c49-sr-Mc7"/>
+                <constraint firstItem="6ZU-8P-Fcc" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="60" id="cs6-wz-KD8"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="6ZU-8P-Fcc" secondAttribute="trailing" constant="60" id="iGf-zh-VvG"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="VJ3-oT-ILo" secondAttribute="trailing" constant="60" id="uKW-jH-VOT"/>
+                <constraint firstItem="wye-BU-5wo" firstAttribute="top" secondItem="gvl-Y4-Zqx" secondAttribute="bottom" constant="20" id="yek-kQ-QJk"/>
             </constraints>
             <connections>
                 <outletCollection property="gestureRecognizers" destination="lEA-bl-ySc" appends="YES" id="sWX-DL-Gmj"/>
