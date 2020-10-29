@@ -22,12 +22,10 @@
 		EA52F266253B129D009286D4 /* CategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F264253B129D009286D4 /* CategoryViewController.xib */; };
 		EA52F2D32541736C009286D4 /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2D12541736C009286D4 /* ContentViewController.swift */; };
 		EA52F2D42541736D009286D4 /* ContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F2D22541736C009286D4 /* ContentViewController.xib */; };
+		EA9C3CA5254A8F4000DE9475 /* AddTodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */; };
+		EA9C3CA6254A8F4000DE9475 /* AddTodoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */; };
 		EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB86C625428C640037390E /* ContentTableViewCell.swift */; };
 		EAFB86C925428C640037390E /* ContentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB86C725428C640037390E /* ContentTableViewCell.xib */; };
-		EAFB86FC2542A29C0037390E /* ContentTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB86FA2542A29C0037390E /* ContentTableViewHeader.swift */; };
-		EAFB86FD2542A29C0037390E /* ContentTableViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */; };
-		EAFB87042542A7570037390E /* ContentTableViewFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB87022542A7570037390E /* ContentTableViewFooter.swift */; };
-		EAFB87052542A7570037390E /* ContentTableViewFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB87032542A7570037390E /* ContentTableViewFooter.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,12 +67,10 @@
 		EA52F264253B129D009286D4 /* CategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryViewController.xib; sourceTree = "<group>"; };
 		EA52F2D12541736C009286D4 /* ContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
 		EA52F2D22541736C009286D4 /* ContentViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentViewController.xib; sourceTree = "<group>"; };
+		EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTodoViewController.swift; sourceTree = "<group>"; };
+		EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTodoViewController.xib; sourceTree = "<group>"; };
 		EAFB86C625428C640037390E /* ContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewCell.swift; sourceTree = "<group>"; };
 		EAFB86C725428C640037390E /* ContentTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewCell.xib; sourceTree = "<group>"; };
-		EAFB86FA2542A29C0037390E /* ContentTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewHeader.swift; sourceTree = "<group>"; };
-		EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewHeader.xib; sourceTree = "<group>"; };
-		EAFB87022542A7570037390E /* ContentTableViewFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewFooter.swift; sourceTree = "<group>"; };
-		EAFB87032542A7570037390E /* ContentTableViewFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewFooter.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +161,8 @@
 				EA52F264253B129D009286D4 /* CategoryViewController.xib */,
 				EA52F2D12541736C009286D4 /* ContentViewController.swift */,
 				EA52F2D22541736C009286D4 /* ContentViewController.xib */,
+				EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */,
+				EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -172,8 +170,6 @@
 		EA52F23B2539C065009286D4 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				EAFB87012542A7430037390E /* Footer */,
-				EAFB86CD25429FF40037390E /* Header */,
 				EAFB86C525428C430037390E /* TableViewCell */,
 				EAFB86C425428C340037390E /* CollectionViewCell */,
 			);
@@ -203,24 +199,6 @@
 				EAFB86C725428C640037390E /* ContentTableViewCell.xib */,
 			);
 			path = TableViewCell;
-			sourceTree = "<group>";
-		};
-		EAFB86CD25429FF40037390E /* Header */ = {
-			isa = PBXGroup;
-			children = (
-				EAFB86FA2542A29C0037390E /* ContentTableViewHeader.swift */,
-				EAFB86FB2542A29C0037390E /* ContentTableViewHeader.xib */,
-			);
-			path = Header;
-			sourceTree = "<group>";
-		};
-		EAFB87012542A7430037390E /* Footer */ = {
-			isa = PBXGroup;
-			children = (
-				EAFB87022542A7570037390E /* ContentTableViewFooter.swift */,
-				EAFB87032542A7570037390E /* ContentTableViewFooter.xib */,
-			);
-			path = Footer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -326,15 +304,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA9C3CA6254A8F4000DE9475 /* AddTodoViewController.xib in Resources */,
 				EA52F21425399820009286D4 /* LaunchScreen.storyboard in Resources */,
 				EAFB86C925428C640037390E /* ContentTableViewCell.xib in Resources */,
-				EAFB86FD2542A29C0037390E /* ContentTableViewHeader.xib in Resources */,
 				EA52F21125399820009286D4 /* Assets.xcassets in Resources */,
 				EA52F2D42541736D009286D4 /* ContentViewController.xib in Resources */,
 				EA52F20C2539981D009286D4 /* Main.storyboard in Resources */,
 				EA52F266253B129D009286D4 /* CategoryViewController.xib in Resources */,
 				EA52F23F2539C088009286D4 /* MainCollectionViewCell.xib in Resources */,
-				EAFB87052542A7570037390E /* ContentTableViewFooter.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,10 +337,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA52F2092539981D009286D4 /* ViewController.swift in Sources */,
-				EAFB86FC2542A29C0037390E /* ContentTableViewHeader.swift in Sources */,
 				EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */,
 				EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */,
-				EAFB87042542A7570037390E /* ContentTableViewFooter.swift in Sources */,
+				EA9C3CA5254A8F4000DE9475 /* AddTodoViewController.swift in Sources */,
 				EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */,
 				EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */,
 				EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */,

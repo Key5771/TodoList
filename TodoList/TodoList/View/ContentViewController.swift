@@ -52,7 +52,8 @@ class ContentViewController: UIViewController {
     }
     
     @IBAction func createTodo(_ sender: Any) {
-        print("click")
+        let vc = AddTodoViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
 }
