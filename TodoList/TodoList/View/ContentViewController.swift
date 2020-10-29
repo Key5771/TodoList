@@ -36,11 +36,6 @@ class ContentViewController: UIViewController {
         loadData()
         
         categoryLabel.text = categoryName
-        if let count = taskCount {
-            taskLabel.text = "\(count) task"
-        } else {
-            taskLabel.text = "0 task"
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -66,6 +61,25 @@ extension ContentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            
+            let context = appDelegate.persistentContainer.viewContext
+            guard let todo = self.controller?.object(at: indexPath) else { return }
+            
+            do {
+                context.delete(todo)
+                try context.save()
+            } catch let error as NSError {
+                print("Could not Delete Todo. \(error), \(error.userInfo)")
+            }
+        }
+        
+        self.loadData()
+        self.tableView.reloadData()
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -76,7 +90,11 @@ extension ContentViewController: UITableViewDataSource {
         }
 
         let sectionInfo = sections[section]
-        self.taskCount = sectionInfo.numberOfObjects
+        if sectionInfo.numberOfObjects != 0 {
+            taskLabel.text = "\(sectionInfo.numberOfObjects) task"
+        } else {
+            taskLabel.text = "0 task"
+        }
         return sectionInfo.numberOfObjects
     }
     
@@ -88,8 +106,10 @@ extension ContentViewController: UITableViewDataSource {
         if let content = controller?.object(at: indexPath) as? Todo {
             if content.categoryName == self.categoryName {
                 cell.todoLabel.text = content.todoName
+                cell.todoLabelView.isHidden = false
             } else {
                 cell.todoLabel.text = ""
+                cell.todoLabelView.isHidden = true
             }
         }
         

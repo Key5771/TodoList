@@ -43,6 +43,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="todoLabel" destination="bpr-sU-8YB" id="Gsz-sB-df4"/>
+                <outlet property="todoLabelView" destination="9uh-Ws-SuL" id="1vR-tJ-JrQ"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="113.83928571428571"/>
         </tableViewCell>
