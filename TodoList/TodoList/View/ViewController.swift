@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var createButton: UIButton!
     
     private var controller: NSFetchedResultsController<NSManagedObject>?
+    private var blockOperation = BlockOperation()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +21,8 @@ class ViewController: UIViewController {
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.register(UINib(nibName: "MainCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "reuseCell")
+        
+        self.controller?.delegate = self
         
         setCreateView()
     }
@@ -123,7 +126,6 @@ extension ViewController: NSFetchedResultsControllerDelegate {
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
         
         controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedContext, sectionNameKeyPath: nil, cacheName: nil)
-        controller?.delegate = self
         
         do {
             try controller?.performFetch()
@@ -133,10 +135,62 @@ extension ViewController: NSFetchedResultsControllerDelegate {
     }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.collectionView.performBatchUpdates(nil, completion: nil)
+        blockOperation = BlockOperation()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        let sectionIndexSet = IndexSet(integer: sectionIndex)
+        
+        switch type {
+        case .insert:
+            blockOperation.addExecutionBlock {
+                self.collectionView.insertSections(sectionIndexSet)
+            }
+        case .delete:
+            blockOperation.addExecutionBlock {
+                self.collectionView.deleteSections(sectionIndexSet)
+            }
+        case .update:
+            blockOperation.addExecutionBlock {
+                self.collectionView.reloadSections(sectionIndexSet)
+            }
+        case .move:
+            assertionFailure()
+            break
+        default:
+            self.collectionView.reloadData()
+        }
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        guard let newIndexPath = newIndexPath, let indexPath = indexPath else { return }
+        
+        switch type {
+        case .insert:
+            blockOperation.addExecutionBlock {
+                self.collectionView.insertItems(at: [newIndexPath])
+            }
+        case .delete:
+            blockOperation.addExecutionBlock {
+                self.collectionView.deleteItems(at: [indexPath])
+            }
+        case .update:
+            blockOperation.addExecutionBlock {
+                self.collectionView.reloadItems(at: [indexPath])
+            }
+        case .move:
+            blockOperation.addExecutionBlock {
+                self.collectionView.moveItem(at: indexPath, to: newIndexPath)
+            }
+        default:
+            self.collectionView.reloadData()
+        }
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.collectionView.performBatchUpdates(nil, completion: nil)
+        self.collectionView.performBatchUpdates ({
+            self.blockOperation.start()
+        }, completion: nil)
+
     }
 }
