@@ -9,9 +9,9 @@ import UIKit
 import CoreData
 
 class AddTodoViewController: UIViewController {
-    @IBOutlet weak var closeButton: UIButton!
-    @IBOutlet weak var createButton: UIButton!
-    @IBOutlet weak var todoTextField: UITextField!
+    @IBOutlet private weak var closeButton: UIButton!
+    @IBOutlet private weak var createButton: UIButton!
+    @IBOutlet private weak var todoTextField: UITextField!
     
     var categoryName: String?
     

@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 class CategoryViewController: UIViewController {
-    @IBOutlet weak var categoryNameTextField: UITextField!
+    @IBOutlet private weak var categoryNameTextField: UITextField!
     
     var todoCateogry: TodoCategory?
     

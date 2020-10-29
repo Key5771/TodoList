@@ -9,13 +9,13 @@ import UIKit
 import CoreData
 
 class ContentViewController: UIViewController {
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet private weak var tableView: UITableView!
     
-    @IBOutlet weak var categoryLabel: UILabel!
-    @IBOutlet weak var taskLabel: UILabel!
-    @IBOutlet weak var createButton: UIButton!
+    @IBOutlet private weak var categoryLabel: UILabel!
+    @IBOutlet private weak var taskLabel: UILabel!
+    @IBOutlet private weak var createButton: UIButton!
     
-    @IBOutlet var swipeGesture: UISwipeGestureRecognizer!
+    @IBOutlet private var swipeGesture: UISwipeGestureRecognizer!
     
     var categoryName: String?
     private var taskCount: Int?
