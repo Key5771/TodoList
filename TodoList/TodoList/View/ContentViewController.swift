@@ -29,16 +29,18 @@ class ContentViewController: UIViewController {
         
         self.tableView.register(UINib(nibName: "ContentTableViewCell", bundle: nil), forCellReuseIdentifier: "contentCell")
         
+        self.controller?.delegate = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        loadData()
+        
         categoryLabel.text = categoryName
         if let count = taskCount {
             taskLabel.text = "\(count) task"
         } else {
             taskLabel.text = "0 task"
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        loadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -53,6 +55,7 @@ class ContentViewController: UIViewController {
     
     @IBAction func createTodo(_ sender: Any) {
         let vc = AddTodoViewController()
+        vc.categoryName = self.categoryName
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -106,7 +109,6 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
         
         controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedContext, sectionNameKeyPath: nil, cacheName: nil)
-        controller?.delegate = self
         
         do {
             try controller?.performFetch()
@@ -121,5 +123,28 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.endUpdates()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        guard let newIndexPath = newIndexPath, let indexPath = indexPath else { return }
+        
+        switch type {
+        case .insert:
+            tableView.insertRows(at: [newIndexPath], with: .fade)
+            break
+        case .delete:
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            break
+        case .move:
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.insertRows(at: [newIndexPath], with: .fade)
+            break
+        case .update:
+            tableView.reloadRows(at: [indexPath], with: .fade)
+            break
+        default:
+            tableView.reloadRows(at: [indexPath], with: .fade)
+            break
+        }
     }
 }

@@ -23,8 +23,8 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wye-BU-5wo">
-                    <rect key="frame" x="15" y="277.5" width="384" height="582.5"/>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="wye-BU-5wo">
+                    <rect key="frame" x="15" y="281.5" width="384" height="578.5"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </tableView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VJ3-oT-ILo">
@@ -34,7 +34,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gvl-Y4-Zqx">
-                    <rect key="frame" x="60" y="221.5" width="294" height="36"/>
+                    <rect key="frame" x="60" y="225.5" width="294" height="36"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                     <state key="normal" title="Create">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -60,10 +60,10 @@
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="wye-BU-5wo" secondAttribute="bottom" constant="2" id="HMr-vF-yUc"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="gvl-Y4-Zqx" secondAttribute="trailing" constant="60" id="LY8-aG-fYA"/>
                 <constraint firstItem="wye-BU-5wo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="15" id="Phf-P1-8aK"/>
-                <constraint firstItem="wye-BU-5wo" firstAttribute="top" secondItem="VJ3-oT-ILo" secondAttribute="bottom" constant="100" id="T9U-Je-49I"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="wye-BU-5wo" secondAttribute="trailing" constant="15" id="YJg-GJ-m98"/>
                 <constraint firstItem="VJ3-oT-ILo" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="100" id="c49-sr-Mc7"/>
                 <constraint firstItem="6ZU-8P-Fcc" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="60" id="cs6-wz-KD8"/>
+                <constraint firstItem="gvl-Y4-Zqx" firstAttribute="top" secondItem="6ZU-8P-Fcc" secondAttribute="bottom" constant="10" id="goH-BB-gvn"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="6ZU-8P-Fcc" secondAttribute="trailing" constant="60" id="iGf-zh-VvG"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="VJ3-oT-ILo" secondAttribute="trailing" constant="60" id="uKW-jH-VOT"/>
                 <constraint firstItem="wye-BU-5wo" firstAttribute="top" secondItem="gvl-Y4-Zqx" secondAttribute="bottom" constant="20" id="yek-kQ-QJk"/>

@@ -10,7 +10,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AddTodoViewController" customModule="TodoList" customModuleProvider="target">
             <connections>
+                <outlet property="closeButton" destination="3QX-VQ-wqN" id="Gxz-S8-eaL"/>
                 <outlet property="createButton" destination="lkE-5j-qpr" id="Ikd-yM-oYU"/>
+                <outlet property="todoTextField" destination="df8-yT-QIs" id="IBw-n1-sYG"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -27,7 +29,7 @@
                             <constraints>
                                 <constraint firstAttribute="width" constant="20" id="LzB-9g-vnc"/>
                             </constraints>
-                            <state key="normal" image="close"/>
+                            <state key="normal" image="leftArrow"/>
                             <connections>
                                 <action selector="closeClick:" destination="-1" eventType="touchUpInside" id="LKB-wM-J8l"/>
                             </connections>
@@ -76,7 +78,7 @@
     </objects>
     <resources>
         <image name="check" width="519.5" height="519.5"/>
-        <image name="close" width="189" height="189"/>
+        <image name="leftArrow" width="185" height="185"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
