@@ -86,9 +86,11 @@ extension ContentViewController: UITableViewDataSource {
         }
         
         if let content = controller?.object(at: indexPath) as? Todo {
-            cell.todoLabel.text = content.todoName
-        } else {
-            cell.todoLabel.text = "TEST"
+            if content.categoryName == self.categoryName {
+                cell.todoLabel.text = content.todoName
+            } else {
+                cell.todoLabel.text = ""
+            }
         }
         
         return cell
@@ -100,12 +102,13 @@ extension ContentViewController: UITableViewDataSource {
 // MARK: - NSFetchedResultsControllerDelegate
 extension ContentViewController: NSFetchedResultsControllerDelegate {
     private func loadData() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let categoryName = categoryName else { return }
         
         let managedContext = appDelegate.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Todo")
+        fetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
         
         controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedContext, sectionNameKeyPath: nil, cacheName: nil)
