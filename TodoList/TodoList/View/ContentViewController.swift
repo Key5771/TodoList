@@ -54,6 +54,19 @@ class ContentViewController: UIViewController {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
+    @IBAction func settingTodo(_ sender: Any) {
+        let alert = UIAlertController(title: "Category Setting", message: "Select Action", preferredStyle: .actionSheet)
+        let deleteButton = UIAlertAction(title: "Delete", style: .destructive) { _ in
+            print("Delete")
+        }
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        alert.addAction(cancelButton)
+        alert.addAction(deleteButton)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    
 }
 
 // MARK: - UITableViewDelegate
