@@ -126,6 +126,8 @@ extension ContentViewController: UITableViewDataSource {
             }
         }
         
+        self.tableView.tableFooterView = UIView()
+        
         return cell
     }
     
