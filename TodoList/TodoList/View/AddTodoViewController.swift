@@ -14,11 +14,12 @@ class AddTodoViewController: UIViewController {
     @IBOutlet private weak var todoTextField: UITextField!
     
     var categoryName: String?
+    var viewModel: ViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        viewModel = ViewModel()
     }
 
     @IBAction func closeClick(_ sender: Any) {
@@ -50,7 +51,8 @@ extension AddTodoViewController {
     private func saveAlert(categoryName: String, todoName: String, date: Date) {
         let alert = UIAlertController(title: "저장", message: "저장하시겠습니까?", preferredStyle: .alert)
         let okButton = UIAlertAction(title: "확인", style: .default) { _ in
-            self.saveData(categoryName: categoryName, todoName: todoName, date: date)
+            guard let viewModel = self.viewModel else { return }
+            viewModel.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date)
             self.navigationController?.popViewController(animated: true)
         }
         let cancelButton = UIAlertAction(title: "취소", style: .cancel, handler: nil)
@@ -58,28 +60,5 @@ extension AddTodoViewController {
         alert.addAction(cancelButton)
         alert.addAction(okButton)
         self.present(alert, animated: true, completion: nil)
-    }
-}
-
-// MARK: - Save Data
-extension AddTodoViewController {
-    private func saveData(categoryName: String, todoName: String, date: Date) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        
-        guard let entity = NSEntityDescription.entity(forEntityName: "Todo", in: managedContext) else { return }
-        let todo = NSManagedObject(entity: entity, insertInto: managedContext)
-        
-        todo.setValue(categoryName, forKey: "categoryName")
-        todo.setValue(todoName, forKey: "todoName")
-        todo.setValue(date, forKey: "createDate")
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save Todo. \(error), \(error.userInfo)")
-        }
     }
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA402DC5256687A400C51D85 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA402DC4256687A400C51D85 /* ViewModel.swift */; };
 		EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2042539981D009286D4 /* AppDelegate.swift */; };
 		EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2062539981D009286D4 /* SceneDelegate.swift */; };
 		EA52F2092539981D009286D4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2082539981D009286D4 /* ViewController.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EA402DC4256687A400C51D85 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		EA52F2012539981D009286D4 /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA52F2042539981D009286D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EA52F2062539981D009286D4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -98,6 +100,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EA402DC32566878A00C51D85 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				EA402DC4256687A400C51D85 /* ViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		EA52F1F82539981D009286D4 = {
 			isa = PBXGroup;
 			children = (
@@ -121,6 +131,7 @@
 		EA52F2032539981D009286D4 /* TodoList */ = {
 			isa = PBXGroup;
 			children = (
+				EA402DC32566878A00C51D85 /* ViewModel */,
 				EA52F23B2539C065009286D4 /* Cell */,
 				EA52F23A2539C050009286D4 /* View */,
 				EA52F2042539981D009286D4 /* AppDelegate.swift */,
@@ -328,6 +339,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA402DC5256687A400C51D85 /* ViewModel.swift in Sources */,
 				EA52F2092539981D009286D4 /* ViewController.swift in Sources */,
 				EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */,
 				EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */,
