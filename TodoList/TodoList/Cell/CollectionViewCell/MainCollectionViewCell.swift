@@ -37,4 +37,13 @@ class MainCollectionViewCell: UICollectionViewCell {
         self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: self.contentView.layer.cornerRadius).cgPath
     }
 
+    func setupDataFromCategoryModel(categoryModel: CategoryModel) {
+        self.titleLabel.text = categoryModel.categoryName
+        
+        guard let date = categoryModel.createDate else { return }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-mm-dd"
+        let result = dateFormatter.string(from: date)
+        self.taskLabel.text = result
+    }
 }

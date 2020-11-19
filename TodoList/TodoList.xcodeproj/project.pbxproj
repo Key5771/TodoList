@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EA402DC5256687A400C51D85 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA402DC4256687A400C51D85 /* ViewModel.swift */; };
+		EA402DCE2566968500C51D85 /* CategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA402DCD2566968500C51D85 /* CategoryModel.swift */; };
 		EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2042539981D009286D4 /* AppDelegate.swift */; };
 		EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2062539981D009286D4 /* SceneDelegate.swift */; };
 		EA52F2092539981D009286D4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2082539981D009286D4 /* ViewController.swift */; };
@@ -48,6 +49,7 @@
 
 /* Begin PBXFileReference section */
 		EA402DC4256687A400C51D85 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		EA402DCD2566968500C51D85 /* CategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModel.swift; sourceTree = "<group>"; };
 		EA52F2012539981D009286D4 /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA52F2042539981D009286D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EA52F2062539981D009286D4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -108,6 +110,14 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		EA402DCC2566967A00C51D85 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				EA402DCD2566968500C51D85 /* CategoryModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		EA52F1F82539981D009286D4 = {
 			isa = PBXGroup;
 			children = (
@@ -131,6 +141,7 @@
 		EA52F2032539981D009286D4 /* TodoList */ = {
 			isa = PBXGroup;
 			children = (
+				EA402DCC2566967A00C51D85 /* Model */,
 				EA402DC32566878A00C51D85 /* ViewModel */,
 				EA52F23B2539C065009286D4 /* Cell */,
 				EA52F23A2539C050009286D4 /* View */,
@@ -346,6 +357,7 @@
 				EA9C3CA5254A8F4000DE9475 /* AddTodoViewController.swift in Sources */,
 				EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */,
 				EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */,
+				EA402DCE2566968500C51D85 /* CategoryModel.swift in Sources */,
 				EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */,
 				EA52F20F2539981D009286D4 /* TodoList.xcdatamodeld in Sources */,
 				EA52F2D32541736C009286D4 /* ContentViewController.swift in Sources */,
