@@ -12,11 +12,12 @@ class CategoryViewController: UIViewController {
     @IBOutlet private weak var categoryNameTextField: UITextField!
     
     var todoCateogry: TodoCategory?
+    var viewModel: ViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        viewModel = ViewModel()
     }
     
     @IBAction func closeButton(_ sender: Any) {
@@ -38,7 +39,8 @@ class CategoryViewController: UIViewController {
                 if self.todoCateogry != nil {
                     
                 } else {
-                    self.save(name: category, date: date)
+//                    self.save(name: category, date: date)
+                    self.viewModel?.saveData(entityName: "TodoCategory", categoryName: category, date: date)
                 }
                 self.dismiss(animated: true, completion: nil)
             }
@@ -56,24 +58,24 @@ class CategoryViewController: UIViewController {
     }
     
     
-    private func save(name: String, date: Date) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        
-        guard let entity = NSEntityDescription.entity(forEntityName: "TodoCategory", in: managedContext) else { return }
-        let category = NSManagedObject(entity: entity, insertInto: managedContext)
-        
-        category.setValue(name, forKey: "name")
-        category.setValue(date, forKey: "createDate")
-        
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
+//    private func save(name: String, date: Date) {
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+//
+//        let managedContext = appDelegate.persistentContainer.viewContext
+//        managedContext.automaticallyMergesChangesFromParent = true
+//
+//        guard let entity = NSEntityDescription.entity(forEntityName: "TodoCategory", in: managedContext) else { return }
+//        let category = NSManagedObject(entity: entity, insertInto: managedContext)
+//
+//        category.setValue(name, forKey: "name")
+//        category.setValue(date, forKey: "createDate")
+//
+//        do {
+//            try managedContext.save()
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
+//    }
     
 
     /*

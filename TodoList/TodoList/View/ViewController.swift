@@ -57,7 +57,7 @@ extension ViewController: UICollectionViewDelegate {
         
         guard let content = controller?.object(at: indexPath) as? TodoCategory else { return }
         let vc = ContentViewController(nibName: "ContentViewController", bundle: nil)
-        vc.categoryName = content.name
+        vc.categoryName = content.categoryName
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }
@@ -78,7 +78,7 @@ extension ViewController: UICollectionViewDataSource {
         }
         
         if let content = controller?.object(at: indexPath) as? TodoCategory {
-            item.titleLabel.text = content.name
+            item.titleLabel.text = content.categoryName
             item.taskLabel.text = "1 task"
         } else {
             item.titleLabel.text = "TEST"
