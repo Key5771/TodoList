@@ -121,7 +121,6 @@
 		EA52F2032539981D009286D4 /* TodoList */ = {
 			isa = PBXGroup;
 			children = (
-				EA52F26A253B181E009286D4 /* Model */,
 				EA52F23B2539C065009286D4 /* Cell */,
 				EA52F23A2539C050009286D4 /* View */,
 				EA52F2042539981D009286D4 /* AppDelegate.swift */,
@@ -174,13 +173,6 @@
 				EAFB86C425428C340037390E /* CollectionViewCell */,
 			);
 			path = Cell;
-			sourceTree = "<group>";
-		};
-		EA52F26A253B181E009286D4 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		EAFB86C425428C340037390E /* CollectionViewCell */ = {
