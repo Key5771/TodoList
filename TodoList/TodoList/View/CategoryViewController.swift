@@ -7,25 +7,71 @@
 
 import UIKit
 import CoreData
+import SnapKit
 
 class CategoryViewController: UIViewController {
-    @IBOutlet private weak var categoryNameTextField: UITextField!
+    
+    private lazy var closeButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "close"), for: .normal)
+        button.addTarget(self, action: #selector(touchClose), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var saveButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "check"), for: .normal)
+        button.addTarget(self, action: #selector(touchSave), for: .touchUpInside)
+        return button
+    }()
+    
+    private let categoryTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Category"
+        textField.addLeftPadding()
+        textField.layer.cornerRadius = 8
+        textField.layer.borderColor = UIColor.gray.cgColor
+        textField.layer.borderWidth = 1
+        return textField
+    }()
     
     var todoCateogry: TodoCategory?
     var viewModel: ViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = .white
         viewModel = ViewModel()
+        setup()
     }
     
-    @IBAction func closeButton(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+    private func setup() {
+        view.addSubview(closeButton)
+        closeButton.snp.makeConstraints { make in
+            make.top.left.equalTo(view.safeAreaLayoutGuide).inset(24)
+            make.width.height.equalTo(24)
+        }
+        
+        view.addSubview(saveButton)
+        saveButton.snp.makeConstraints { make in
+            make.top.right.equalTo(view.safeAreaLayoutGuide).inset(24)
+            make.width.height.equalTo(24)
+        }
+        
+        view.addSubview(categoryTextField)
+        categoryTextField.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.left.right.equalToSuperview().inset(12)
+            make.height.equalTo(44)
+        }
     }
     
-    @IBAction func saveButton(_ sender: Any) {
-        guard let category = categoryNameTextField.text else { return }
+    @objc private func touchClose() {
+        self.dismiss(animated: true)
+    }
+    
+    @objc private func touchSave() {
+        guard let category = categoryTextField.text else { return }
         let date = Date()
         
         if category == "" {
@@ -39,7 +85,6 @@ class CategoryViewController: UIViewController {
                 if self.todoCateogry != nil {
                     
                 } else {
-//                    self.save(name: category, date: date)
                     self.viewModel?.saveData(entityName: "TodoCategory", categoryName: category, date: date)
                 }
                 self.dismiss(animated: true, completion: nil)
@@ -56,36 +101,4 @@ class CategoryViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
-    
-    
-//    private func save(name: String, date: Date) {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-//
-//        let managedContext = appDelegate.persistentContainer.viewContext
-//        managedContext.automaticallyMergesChangesFromParent = true
-//
-//        guard let entity = NSEntityDescription.entity(forEntityName: "TodoCategory", in: managedContext) else { return }
-//        let category = NSManagedObject(entity: entity, insertInto: managedContext)
-//
-//        category.setValue(name, forKey: "name")
-//        category.setValue(date, forKey: "createDate")
-//
-//        do {
-//            try managedContext.save()
-//        } catch let error as NSError {
-//            print("Could not save. \(error), \(error.userInfo)")
-//        }
-//    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
