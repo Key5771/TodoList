@@ -44,7 +44,7 @@ class ViewController: UIViewController {
     
     // MARK: - CreateView Action
     @IBAction func create(_ sender: Any) {
-        let vc = CategoryViewController(nibName: "CategoryViewController", bundle: nil)
+        let vc = CategoryViewController()
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
