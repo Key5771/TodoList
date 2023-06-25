@@ -56,7 +56,7 @@ extension ViewController: UICollectionViewDelegate {
         self.collectionView.deselectItem(at: indexPath, animated: true)
         
         guard let content = controller?.object(at: indexPath) as? TodoCategory else { return }
-        let vc = ContentViewController(nibName: "ContentViewController", bundle: nil)
+        let vc = ContentViewController()
         vc.categoryName = content.categoryName
         self.navigationController?.pushViewController(vc, animated: true)
     }

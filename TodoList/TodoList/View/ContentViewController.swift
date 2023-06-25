@@ -7,15 +7,49 @@
 
 import UIKit
 import CoreData
+import SnapKit
 
 class ContentViewController: UIViewController {
-    @IBOutlet private weak var tableView: UITableView!
     
-    @IBOutlet private weak var categoryLabel: UILabel!
-    @IBOutlet private weak var taskLabel: UILabel!
-    @IBOutlet private weak var createButton: UIButton!
+    private lazy var settingButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "setting"), for: .normal)
+        button.addTarget(self, action: #selector(settingTodo), for: .touchUpInside)
+        return button
+    }()
     
-    @IBOutlet private var swipeGesture: UISwipeGestureRecognizer!
+    private lazy var createButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Create", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(createTodo), for: .touchUpInside)
+        button.clipsToBounds = true
+        button.backgroundColor = .black
+        button.layer.cornerRadius = 8
+        return button
+    }()
+    
+    private let categoryLabel: UILabel = {
+        let label = UILabel()
+        label.font = .boldSystemFont(ofSize: 24)
+        return label
+    }()
+    private let taskLabel = UILabel()
+    
+    private lazy var tableView: UITableView = {
+        let tv = UITableView()
+        tv.delegate = self
+        tv.dataSource = self
+        tv.register(ContentTableViewCell.self,
+                    forCellReuseIdentifier: ContentTableViewCell.identifier)
+        return tv
+    }()
+    
+    private lazy var swipeGesture: UISwipeGestureRecognizer = {
+        let gesture = UISwipeGestureRecognizer()
+        gesture.addTarget(self, action: #selector(leftSwipe))
+        return gesture
+    }()
     
     var categoryName: String?
     private var taskCount: Int?
@@ -23,12 +57,7 @@ class ContentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        
-        self.tableView.register(UINib(nibName: "ContentTableViewCell", bundle: nil), forCellReuseIdentifier: "contentCell")
-        
+        setup()
         self.controller?.delegate = self
     }
     
@@ -41,20 +70,58 @@ class ContentViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         self.tableView.reloadData()
     }
+    
+    private func setup() {
+        view.backgroundColor = .white
+        view.addSubview(settingButton)
+        settingButton.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.right.equalToSuperview().inset(16)
+            make.width.height.equalTo(24)
+        }
+        
+        view.addSubview(categoryLabel)
+        categoryLabel.snp.makeConstraints { make in
+            make.top.equalTo(settingButton.snp.bottom).offset(16)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(44)
+        }
+        
+        view.addSubview(taskLabel)
+        taskLabel.snp.makeConstraints { make in
+            make.top.equalTo(categoryLabel.snp.bottom).inset(16)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(44)
+        }
+        
+        view.addSubview(createButton)
+        createButton.snp.makeConstraints { make in
+            make.top.equalTo(taskLabel.snp.bottom).offset(16)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(100)
+            make.height.equalTo(56)
+        }
+        
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(createButton.snp.bottom).offset(16)
+            make.left.right.bottom.equalToSuperview()
+        }
+    }
 
-    @IBAction func leftSwipe(_ sender: Any) {
+    @objc private func leftSwipe() {
         if swipeGesture.direction == .right {
             self.navigationController?.popViewController(animated: true)
         }
     }
     
-    @IBAction func createTodo(_ sender: Any) {
+    @objc private func createTodo() {
         let vc = AddTodoViewController()
         vc.categoryName = self.categoryName
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
-    @IBAction func settingTodo(_ sender: Any) {
+    @objc private func settingTodo() {
         let alert = UIAlertController(title: "Category Setting", message: "Select Action", preferredStyle: .actionSheet)
         let deleteButton = UIAlertAction(title: "Delete", style: .destructive) { _ in
             print("Delete")
@@ -65,8 +132,6 @@ class ContentViewController: UIViewController {
         alert.addAction(deleteButton)
         self.present(alert, animated: true, completion: nil)
     }
-    
-    
 }
 
 // MARK: - UITableViewDelegate
@@ -112,26 +177,16 @@ extension ContentViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "contentCell", for: indexPath) as? ContentTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ContentTableViewCell.identifier, for: indexPath) as? ContentTableViewCell else {
             return UITableViewCell()
         }
         
         if let content = controller?.object(at: indexPath) as? Todo {
-            if content.categoryName == self.categoryName {
-                cell.todoLabel.text = content.todoName
-                cell.todoLabelView.isHidden = false
-            } else {
-                cell.todoLabel.text = ""
-                cell.todoLabelView.isHidden = true
-            }
+            cell.configure(with: content)
         }
-        
-        self.tableView.tableFooterView = UIView()
         
         return cell
     }
-    
-    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
