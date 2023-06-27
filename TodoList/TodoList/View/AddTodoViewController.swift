@@ -7,26 +7,47 @@
 
 import UIKit
 import CoreData
+import SnapKit
 
 class AddTodoViewController: UIViewController {
-    @IBOutlet private weak var closeButton: UIButton!
-    @IBOutlet private weak var createButton: UIButton!
-    @IBOutlet private weak var todoTextField: UITextField!
+    private lazy var createButton: UIButton = {
+        let button = UIButton()
+        button.clipsToBounds = true
+        button.setTitle("저장하기", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .black
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(touchSave), for: .touchUpInside)
+        return button
+    }()
+    private let todoTextField = UITextField()
     
     var categoryName: String?
     var viewModel: ViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        setup()
         viewModel = ViewModel()
     }
-
-    @IBAction func closeClick(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+    
+    private func setup() {
+        view.backgroundColor = .white
+        view.addSubview(todoTextField)
+        todoTextField.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(32)
+            make.left.right.equalToSuperview().inset(64)
+        }
+        
+        view.addSubview(createButton)
+        createButton.snp.makeConstraints { make in
+            make.left.right.equalToSuperview().inset(64)
+            make.bottom.equalToSuperview().offset(32)
+            make.height.equalTo(56)
+        }
     }
     
-    @IBAction func saveClick(_ sender: Any) {
+    @objc private func touchSave() {
         guard let todoName = todoTextField.text, let categoryName = categoryName else { return }
         let date = Date()
         

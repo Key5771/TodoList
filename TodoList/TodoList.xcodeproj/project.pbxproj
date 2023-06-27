@@ -27,7 +27,6 @@
 		EA52F2D32541736C009286D4 /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2D12541736C009286D4 /* ContentViewController.swift */; };
 		EA6CF8732A46D53E009D25EF /* UITextField+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6CF8722A46D53E009D25EF /* UITextField+Extension.swift */; };
 		EA9C3CA5254A8F4000DE9475 /* AddTodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */; };
-		EA9C3CA6254A8F4000DE9475 /* AddTodoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */; };
 		EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB86C625428C640037390E /* ContentTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -81,7 +80,6 @@
 		EA52F2D12541736C009286D4 /* ContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
 		EA6CF8722A46D53E009D25EF /* UITextField+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Extension.swift"; sourceTree = "<group>"; };
 		EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTodoViewController.swift; sourceTree = "<group>"; };
-		EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTodoViewController.xib; sourceTree = "<group>"; };
 		EAFB86C625428C640037390E /* ContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -208,7 +206,6 @@
 				EA52F263253B129D009286D4 /* CategoryViewController.swift */,
 				EA52F2D12541736C009286D4 /* ContentViewController.swift */,
 				EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */,
-				EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -365,7 +362,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA9C3CA6254A8F4000DE9475 /* AddTodoViewController.xib in Resources */,
 				EA52F21425399820009286D4 /* LaunchScreen.storyboard in Resources */,
 				EA52F21125399820009286D4 /* Assets.xcassets in Resources */,
 				EA52F20C2539981D009286D4 /* Main.storyboard in Resources */,
