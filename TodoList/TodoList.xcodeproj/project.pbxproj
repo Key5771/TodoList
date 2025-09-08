@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,15 +22,10 @@
 		EA52F21F25399820009286D4 /* TodoListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F21E25399820009286D4 /* TodoListTests.swift */; };
 		EA52F22A25399820009286D4 /* TodoListUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F22925399820009286D4 /* TodoListUITests.swift */; };
 		EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F23C2539C088009286D4 /* MainCollectionViewCell.swift */; };
-		EA52F23F2539C088009286D4 /* MainCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F23D2539C088009286D4 /* MainCollectionViewCell.xib */; };
 		EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F263253B129D009286D4 /* CategoryViewController.swift */; };
-		EA52F266253B129D009286D4 /* CategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F264253B129D009286D4 /* CategoryViewController.xib */; };
 		EA52F2D32541736C009286D4 /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2D12541736C009286D4 /* ContentViewController.swift */; };
-		EA52F2D42541736D009286D4 /* ContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA52F2D22541736C009286D4 /* ContentViewController.xib */; };
 		EA9C3CA5254A8F4000DE9475 /* AddTodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */; };
-		EA9C3CA6254A8F4000DE9475 /* AddTodoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */; };
 		EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB86C625428C640037390E /* ContentTableViewCell.swift */; };
-		EAFB86C925428C640037390E /* ContentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAFB86C725428C640037390E /* ContentTableViewCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,15 +73,10 @@
 		EA52F22925399820009286D4 /* TodoListUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListUITests.swift; sourceTree = "<group>"; };
 		EA52F22B25399820009286D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EA52F23C2539C088009286D4 /* MainCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCollectionViewCell.swift; sourceTree = "<group>"; };
-		EA52F23D2539C088009286D4 /* MainCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainCollectionViewCell.xib; sourceTree = "<group>"; };
 		EA52F263253B129D009286D4 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
-		EA52F264253B129D009286D4 /* CategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryViewController.xib; sourceTree = "<group>"; };
 		EA52F2D12541736C009286D4 /* ContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
-		EA52F2D22541736C009286D4 /* ContentViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentViewController.xib; sourceTree = "<group>"; };
 		EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTodoViewController.swift; sourceTree = "<group>"; };
-		EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTodoViewController.xib; sourceTree = "<group>"; };
 		EAFB86C625428C640037390E /* ContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewCell.swift; sourceTree = "<group>"; };
-		EAFB86C725428C640037390E /* ContentTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContentTableViewCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,7 +117,6 @@
 				E70591AA4C980CA0D5F1A545 /* Pods-TodoListTests.debug.xcconfig */,
 				A047F9F2BB45B38AB814528F /* Pods-TodoListTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -210,11 +199,8 @@
 			children = (
 				EA52F2082539981D009286D4 /* ViewController.swift */,
 				EA52F263253B129D009286D4 /* CategoryViewController.swift */,
-				EA52F264253B129D009286D4 /* CategoryViewController.xib */,
 				EA52F2D12541736C009286D4 /* ContentViewController.swift */,
-				EA52F2D22541736C009286D4 /* ContentViewController.xib */,
 				EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */,
-				EA9C3CA4254A8F4000DE9475 /* AddTodoViewController.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -232,7 +218,6 @@
 			isa = PBXGroup;
 			children = (
 				EA52F23C2539C088009286D4 /* MainCollectionViewCell.swift */,
-				EA52F23D2539C088009286D4 /* MainCollectionViewCell.xib */,
 			);
 			path = CollectionViewCell;
 			sourceTree = "<group>";
@@ -241,7 +226,6 @@
 			isa = PBXGroup;
 			children = (
 				EAFB86C625428C640037390E /* ContentTableViewCell.swift */,
-				EAFB86C725428C640037390E /* ContentTableViewCell.xib */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -364,14 +348,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA9C3CA6254A8F4000DE9475 /* AddTodoViewController.xib in Resources */,
 				EA52F21425399820009286D4 /* LaunchScreen.storyboard in Resources */,
-				EAFB86C925428C640037390E /* ContentTableViewCell.xib in Resources */,
 				EA52F21125399820009286D4 /* Assets.xcassets in Resources */,
-				EA52F2D42541736D009286D4 /* ContentViewController.xib in Resources */,
 				EA52F20C2539981D009286D4 /* Main.storyboard in Resources */,
-				EA52F266253B129D009286D4 /* CategoryViewController.xib in Resources */,
-				EA52F23F2539C088009286D4 /* MainCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,9 +423,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TodoList/Pods-TodoList-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TodoList/Pods-TodoList-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -461,9 +444,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TodoList-TodoListUITests/Pods-TodoList-TodoListUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TodoList-TodoListUITests/Pods-TodoList-TodoListUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -686,6 +673,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = U53BLS7M93;
 				INFOPLIST_FILE = TodoList/Info.plist;
@@ -695,6 +683,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = key.TodoList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -706,6 +695,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = U53BLS7M93;
 				INFOPLIST_FILE = TodoList/Info.plist;
@@ -715,6 +705,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = key.TodoList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

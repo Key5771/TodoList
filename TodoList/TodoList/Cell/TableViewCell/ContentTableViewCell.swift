@@ -10,13 +10,6 @@ import SnapKit
 
 class ContentTableViewCell: UITableViewCell {
     // MARK: - UI Components
-    let todoLabelView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.layer.cornerRadius = 8
-        return view
-    }()
-    
     let todoLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .medium)
@@ -34,25 +27,6 @@ class ContentTableViewCell: UITableViewCell {
         button.tintColor = .systemGray3
         button.isUserInteractionEnabled = false
         return button
-    }()
-    
-    private let containerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .secondarySystemBackground
-        view.layer.cornerRadius = 12
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOpacity = 0.08
-        view.layer.shadowOffset = CGSize(width: 0, y: 2)
-        view.layer.shadowRadius = 4
-        return view
-    }()
-    
-    private let priorityIndicator: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemBlue
-        view.layer.cornerRadius = 2
-        view.isHidden = true
-        return view
     }()
     
     private var isCompleted: Bool = false {
@@ -85,8 +59,6 @@ class ContentTableViewCell: UITableViewCell {
         super.prepareForReuse()
         todoLabel.text = nil
         isCompleted = false
-        priorityIndicator.isHidden = true
-        todoLabelView.isHidden = false
         
         // 애니메이션 상태 초기화
         transform = .identity
@@ -97,42 +69,12 @@ class ContentTableViewCell: UITableViewCell {
     private func setupCell() {
         backgroundColor = .clear
         selectionStyle = .none
-        
-        contentView.addSubview(containerView)
-        containerView.addSubview(todoLabelView)
-        containerView.addSubview(priorityIndicator)
-        
-        todoLabelView.addSubview(checkButton)
-        todoLabelView.addSubview(todoLabel)
+        contentView.addSubview(todoLabel)
     }
     
     private func setupConstraints() {
-        containerView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(4)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.greaterThanOrEqualTo(60)
-        }
-        
-        priorityIndicator.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.top.bottom.equalToSuperview().inset(8)
-            make.width.equalTo(4)
-        }
-        
-        todoLabelView.snp.makeConstraints { make in
-            make.leading.equalTo(priorityIndicator.snp.trailing).offset(4)
-            make.trailing.top.bottom.equalToSuperview()
-        }
-        
-        checkButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(24)
-        }
-        
         todoLabel.snp.makeConstraints { make in
-            make.leading.equalTo(checkButton.snp.trailing).offset(12)
-            make.trailing.equalToSuperview().offset(-16)
+            make.left.right.equalToSuperview().offset(12)
             make.centerY.equalToSuperview()
         }
     }
@@ -141,18 +83,6 @@ class ContentTableViewCell: UITableViewCell {
     func configure(with todoText: String, isCompleted: Bool = false, priority: TaskPriority = .normal) {
         todoLabel.text = todoText
         self.isCompleted = isCompleted
-        
-        // 우선순위에 따른 표시
-        switch priority {
-        case .high:
-            priorityIndicator.backgroundColor = .systemRed
-            priorityIndicator.isHidden = false
-        case .medium:
-            priorityIndicator.backgroundColor = .systemOrange
-            priorityIndicator.isHidden = false
-        case .normal:
-            priorityIndicator.isHidden = true
-        }
     }
     
     func toggleCompletion() {
@@ -174,8 +104,6 @@ class ContentTableViewCell: UITableViewCell {
                 string: todoLabel.text ?? "",
                 attributes: [.strikethroughStyle: NSUnderlineStyle.single.rawValue]
             )
-            
-            containerView.backgroundColor = .tertiarySystemBackground
         } else {
             let image = UIImage(systemName: "circle", withConfiguration: config)
             checkButton.setImage(image, for: .normal)
@@ -183,8 +111,6 @@ class ContentTableViewCell: UITableViewCell {
             
             todoLabel.textColor = .label
             todoLabel.attributedText = NSAttributedString(string: todoLabel.text ?? "")
-            
-            containerView.backgroundColor = .secondarySystemBackground
         }
     }
     

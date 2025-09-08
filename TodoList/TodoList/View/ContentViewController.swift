@@ -196,7 +196,7 @@ class ContentViewController: UIViewController {
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "contentCell")
+        tableView.register(ContentTableViewCell.self, forCellReuseIdentifier: "contentCell")
         controller?.delegate = self
     }
     

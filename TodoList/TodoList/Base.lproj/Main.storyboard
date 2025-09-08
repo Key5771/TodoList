@@ -41,7 +41,6 @@
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="create:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vhS-KD-til"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -63,8 +62,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="5yu-0o-iOD"/>
                     <connections>
-                        <outlet property="collectionView" destination="xHf-Xd-NNK" id="ukm-kC-xtN"/>
-                        <outlet property="createButton" destination="qfp-ou-SOk" id="QfI-mx-mQi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
