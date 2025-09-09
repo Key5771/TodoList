@@ -160,7 +160,8 @@ extension AddTodoViewController {
         let alert = UIAlertController(title: "저장", message: "저장하시겠습니까?", preferredStyle: .alert)
         let okButton = UIAlertAction(title: "확인", style: .default) { _ in
             guard let viewModel = self.viewModel else { return }
-            viewModel.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date)
+            // 새로운 할 일은 기본적으로 미완료 상태로 생성
+            viewModel.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date, isCompleted: false)
             self.navigationController?.popViewController(animated: true)
         }
         let cancelButton = UIAlertAction(title: "취소", style: .cancel, handler: nil)
