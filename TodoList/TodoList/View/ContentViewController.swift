@@ -94,11 +94,13 @@ class ContentViewController: UIViewController {
     // MARK: - Properties
     var categoryName: String?
     private var taskCount: Int = 0
-    private var controller: NSFetchedResultsController<NSManagedObject>?
+    private var viewModel: ContentViewModel!
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = ContentViewModel(categoryName: categoryName)
+        viewModel.delegate = self
         setupUI()
         setupConstraints()
         setupTableView()
@@ -108,7 +110,7 @@ class ContentViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadData()
+        viewModel.loadData()
         categoryLabel.text = categoryName
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
@@ -197,7 +199,7 @@ class ContentViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ContentTableViewCell.self, forCellReuseIdentifier: "contentCell")
-        controller?.delegate = self
+        viewModel.getFetchedResultsController()?.delegate = self
     }
     
     private func setupActions() {
@@ -251,85 +253,12 @@ class ContentViewController: UIViewController {
         )
         
         let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
-            self.deleteCategory()
+            self.viewModel.deleteCategory()
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
-        present(alert, animated: true)
-    }
-    
-    // MARK: - Category Management
-    private func deleteCategory() {
-        guard let categoryName = self.categoryName,
-              let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            print("카테고리 이름이 없거나 AppDelegate를 가져올 수 없습니다.")
-            return
-        }
-        
-        let context = appDelegate.persistentContainer.viewContext
-        
-        // 1. 해당 카테고리의 모든 Todo 삭제
-        let todoFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Todo")
-        todoFetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
-        
-        do {
-            let todos = try context.fetch(todoFetchRequest)
-            for todo in todos {
-                context.delete(todo)
-            }
-            print("카테고리 '\(categoryName)'의 할 일 \(todos.count)개가 삭제되었습니다.")
-        } catch let error as NSError {
-            print("Todo 삭제 중 오류 발생: \(error), \(error.userInfo)")
-        }
-        
-        // 2. TodoCategory 엔티티에서 카테고리 삭제
-        let categoryFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "TodoCategory")
-        categoryFetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
-        
-        do {
-            let categories = try context.fetch(categoryFetchRequest)
-            for category in categories {
-                context.delete(category)
-            }
-            print("카테고리 '\(categoryName)'가 삭제되었습니다.")
-        } catch let error as NSError {
-            print("카테고리 삭제 중 오류 발생: \(error), \(error.userInfo)")
-        }
-        
-        // 3. 변경사항 저장
-        do {
-            try context.save()
-            print("카테고리 삭제가 완료되었습니다.")
-            
-            // 4. UI 업데이트 및 이전 화면으로 돌아가기
-            DispatchQueue.main.async {
-                self.showDeletionSuccessAlert()
-            }
-        } catch let error as NSError {
-            print("카테고리 삭제 저장 중 오류 발생: \(error), \(error.userInfo)")
-            
-            // 실패 시 사용자에게 알림
-            DispatchQueue.main.async {
-                self.showDeletionErrorAlert()
-            }
-        }
-    }
-    
-    private func showDeletionSuccessAlert() {
-        let alert = UIAlertController(
-            title: "삭제 완료",
-            message: "카테고리가 성공적으로 삭제되었습니다.",
-            preferredStyle: .alert
-        )
-        
-        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
-            // 이전 화면으로 돌아가기
-            self.navigationController?.popViewController(animated: true)
-        }
-        
-        alert.addAction(confirmAction)
         present(alert, animated: true)
     }
     
@@ -350,7 +279,7 @@ class ContentViewController: UIViewController {
 // MARK: - UITableViewDelegate & DataSource
 extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let sections = controller?.sections else {
+        guard let sections = viewModel.getFetchedResultsController()?.sections else {
             fatalError("No sections in fetchedResultsController at ContentViewController")
         }
 
@@ -368,7 +297,7 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "contentCell", for: indexPath)
         
-        if let content = controller?.object(at: indexPath) as? Todo {
+        if let content = viewModel.getFetchedResultsController()?.object(at: indexPath) as? Todo {
             if content.categoryName == categoryName {
                 cell.textLabel?.text = content.todoName
                 cell.textLabel?.font = .systemFont(ofSize: 16)
@@ -412,21 +341,11 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-            
-            let context = appDelegate.persistentContainer.viewContext
-            guard let todo = controller?.object(at: indexPath) else { return }
-            
-            do {
-                context.delete(todo)
-                try context.save()
-            } catch let error as NSError {
-                print("Could not Delete Todo. \(error), \(error.userInfo)")
+            if viewModel.deleteTodo(at: indexPath) {
+                viewModel.loadData()
+                tableView.reloadData()
             }
         }
-        
-        loadData()
-        tableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -436,32 +355,6 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension ContentViewController: NSFetchedResultsControllerDelegate {
-    private func loadData() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, 
-              let categoryName = categoryName else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.automaticallyMergesChangesFromParent = true
-        
-        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Todo")
-        fetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
-        
-        controller = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: managedContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        
-        controller?.delegate = self
-        
-        do {
-            try controller?.performFetch()
-        } catch let error as NSError {
-            print("Could not Content Fetch. \(error), \(error.userInfo)")
-        }
-    }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
@@ -499,6 +392,29 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
             if let indexPath = indexPath {
                 tableView.reloadRows(at: [indexPath], with: .fade)
             }
+        }
+    }
+}
+
+// MARK: - ContentViewModelDelegate
+extension ContentViewController: ContentViewModelDelegate {
+    func didDeleteCategorySuccessfully() {
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    func didFailToDeleteCategory(error: String) {
+        DispatchQueue.main.async {
+            self.showDeletionErrorAlert()
+        }
+    }
+    
+    func didUpdateTaskCount(_ count: Int) {
+        DispatchQueue.main.async {
+            self.taskCount = count
+            self.taskLabel.text = "\(count) task\(count != 1 ? "s" : "")"
+            self.updateEmptyState()
         }
     }
 }
