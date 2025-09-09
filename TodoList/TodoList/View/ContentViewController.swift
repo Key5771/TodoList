@@ -251,13 +251,98 @@ class ContentViewController: UIViewController {
         )
         
         let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
-            // TODO: 카테고리 삭제 구현
-            print("카테고리 삭제 기능 - 미구현")
+            self.deleteCategory()
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
+        present(alert, animated: true)
+    }
+    
+    // MARK: - Category Management
+    private func deleteCategory() {
+        guard let categoryName = self.categoryName,
+              let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            print("카테고리 이름이 없거나 AppDelegate를 가져올 수 없습니다.")
+            return
+        }
+        
+        let context = appDelegate.persistentContainer.viewContext
+        
+        // 1. 해당 카테고리의 모든 Todo 삭제
+        let todoFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Todo")
+        todoFetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
+        
+        do {
+            let todos = try context.fetch(todoFetchRequest)
+            for todo in todos {
+                context.delete(todo)
+            }
+            print("카테고리 '\(categoryName)'의 할 일 \(todos.count)개가 삭제되었습니다.")
+        } catch let error as NSError {
+            print("Todo 삭제 중 오류 발생: \(error), \(error.userInfo)")
+        }
+        
+        // 2. TodoCategory 엔티티에서 카테고리 삭제
+        let categoryFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "TodoCategory")
+        categoryFetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
+        
+        do {
+            let categories = try context.fetch(categoryFetchRequest)
+            for category in categories {
+                context.delete(category)
+            }
+            print("카테고리 '\(categoryName)'가 삭제되었습니다.")
+        } catch let error as NSError {
+            print("카테고리 삭제 중 오류 발생: \(error), \(error.userInfo)")
+        }
+        
+        // 3. 변경사항 저장
+        do {
+            try context.save()
+            print("카테고리 삭제가 완료되었습니다.")
+            
+            // 4. UI 업데이트 및 이전 화면으로 돌아가기
+            DispatchQueue.main.async {
+                self.showDeletionSuccessAlert()
+            }
+        } catch let error as NSError {
+            print("카테고리 삭제 저장 중 오류 발생: \(error), \(error.userInfo)")
+            
+            // 실패 시 사용자에게 알림
+            DispatchQueue.main.async {
+                self.showDeletionErrorAlert()
+            }
+        }
+    }
+    
+    private func showDeletionSuccessAlert() {
+        let alert = UIAlertController(
+            title: "삭제 완료",
+            message: "카테고리가 성공적으로 삭제되었습니다.",
+            preferredStyle: .alert
+        )
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            // 이전 화면으로 돌아가기
+            self.navigationController?.popViewController(animated: true)
+        }
+        
+        alert.addAction(confirmAction)
+        present(alert, animated: true)
+    }
+    
+    private func showDeletionErrorAlert() {
+        let alert = UIAlertController(
+            title: "삭제 실패",
+            message: "카테고리 삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
+            preferredStyle: .alert
+        )
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+        
+        alert.addAction(confirmAction)
         present(alert, animated: true)
     }
 }
