@@ -8,6 +8,10 @@
 import UIKit
 import SnapKit
 
+protocol ContentTableViewCellDelegate: AnyObject {
+    func didToggleCompletion(for cell: ContentTableViewCell)
+}
+
 class ContentTableViewCell: UITableViewCell {
     // MARK: - UI Components
     let todoLabel: UILabel = {
@@ -21,25 +25,37 @@ class ContentTableViewCell: UITableViewCell {
     
     private let checkButton: UIButton = {
         let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
         let image = UIImage(systemName: "circle", withConfiguration: config)
         button.setImage(image, for: .normal)
         button.tintColor = .systemGray3
-        button.isUserInteractionEnabled = false
         return button
     }()
     
+    private let dateLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.textColor = .tertiaryLabel
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    // MARK: - Properties
+    weak var delegate: ContentTableViewCellDelegate?
     private var isCompleted: Bool = false {
         didSet {
             updateCompletionState()
         }
     }
     
+    private var todo: Todo?
+    
     // MARK: - Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCell()
         setupConstraints()
+        setupActions()
     }
     
     required init?(coder: NSCoder) {
@@ -49,16 +65,15 @@ class ContentTableViewCell: UITableViewCell {
     // MARK: - Lifecycle
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        
-        if selected {
-            animateSelection()
-        }
+        // 선택 시에는 아무 액션하지 않음 (체크박스 터치로만 완료 상태 변경)
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         todoLabel.text = nil
+        dateLabel.text = nil
         isCompleted = false
+        todo = nil
         
         // 애니메이션 상태 초기화
         transform = .identity
@@ -69,67 +84,124 @@ class ContentTableViewCell: UITableViewCell {
     private func setupCell() {
         backgroundColor = .clear
         selectionStyle = .none
+        
         contentView.addSubview(todoLabel)
+        contentView.addSubview(checkButton)
+        contentView.addSubview(dateLabel)
     }
     
     private func setupConstraints() {
-        todoLabel.snp.makeConstraints { make in
-            make.left.right.equalToSuperview().offset(12)
+        checkButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
+            make.width.height.equalTo(30)
+        }
+        
+        todoLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16)
+            make.trailing.equalTo(checkButton.snp.leading).offset(-12)
+            make.top.equalToSuperview().inset(8)
+        }
+        
+        dateLabel.snp.makeConstraints { make in
+            make.leading.equalTo(todoLabel)
+            make.trailing.equalTo(checkButton.snp.leading).offset(-12)
+            make.top.equalTo(todoLabel.snp.bottom).offset(2)
+            make.bottom.equalToSuperview().inset(8)
         }
     }
     
+    private func setupActions() {
+        checkButton.addTarget(self, action: #selector(checkButtonTapped), for: .touchUpInside)
+    }
+    
     // MARK: - Public Methods
+    func configure(with todo: Todo) {
+        self.todo = todo
+        todoLabel.text = todo.displayName
+        isCompleted = todo.isCompleted
+        
+        // 날짜 표시
+        if let createDate = todo.createDate {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .none
+            formatter.timeStyle = .short
+            dateLabel.text = "Created: \(formatter.string(from: createDate))"
+        } else {
+            dateLabel.text = ""
+        }
+        
+        updateCompletionState()
+    }
+    
+    @Deprecated("Use configure(with: Todo) instead")
     func configure(with todoText: String, isCompleted: Bool = false, priority: TaskPriority = .normal) {
         todoLabel.text = todoText
         self.isCompleted = isCompleted
-    }
-    
-    func toggleCompletion() {
-        isCompleted.toggle()
-        animateCompletionToggle()
+        dateLabel.text = ""
     }
     
     // MARK: - Private Methods
+    @objc private func checkButtonTapped() {
+        // 애니메이션 효과
+        animateCheckButton()
+        
+        // 완료 상태 토글
+        isCompleted.toggle()
+        
+        // Core Data 업데이트
+        if let todo = todo {
+            todo.isCompleted = isCompleted
+            todo.completedDate = isCompleted ? Date() : nil
+        }
+        
+        // Delegate에 변경사항 알림
+        delegate?.didToggleCompletion(for: self)
+    }
+    
     private func updateCompletionState() {
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
         
         if isCompleted {
+            // 완료 상태
             let image = UIImage(systemName: "checkmark.circle.fill", withConfiguration: config)
             checkButton.setImage(image, for: .normal)
             checkButton.tintColor = .systemGreen
             
+            // 텍스트 스타일링
             todoLabel.textColor = .secondaryLabel
-            todoLabel.attributedText = NSAttributedString(
-                string: todoLabel.text ?? "",
-                attributes: [.strikethroughStyle: NSUnderlineStyle.single.rawValue]
-            )
+            dateLabel.textColor = .quaternaryLabel
+            
+            // 취소선 적용
+            let attributedText = NSMutableAttributedString(string: todoLabel.text ?? "")
+            attributedText.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: attributedText.length))
+            todoLabel.attributedText = attributedText
+            
         } else {
+            // 미완료 상태
             let image = UIImage(systemName: "circle", withConfiguration: config)
             checkButton.setImage(image, for: .normal)
             checkButton.tintColor = .systemGray3
             
+            // 텍스트 스타일링
             todoLabel.textColor = .label
+            dateLabel.textColor = .tertiaryLabel
+            
+            // 취소선 제거
             todoLabel.attributedText = NSAttributedString(string: todoLabel.text ?? "")
         }
     }
     
-    private func animateSelection() {
+    private func animateCheckButton() {
         UIView.animate(withDuration: 0.1, animations: {
-            self.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
+            self.checkButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
         }) { _ in
-            UIView.animate(withDuration: 0.1) {
-                self.transform = .identity
-            }
-        }
-    }
-    
-    private func animateCompletionToggle() {
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: [.curveEaseInOut], animations: {
-            self.checkButton.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
-        }) { _ in
-            UIView.animate(withDuration: 0.2) {
-                self.checkButton.transform = .identity
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.8, options: [.curveEaseInOut], animations: {
+                self.checkButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            }) { _ in
+                UIView.animate(withDuration: 0.2) {
+                    self.checkButton.transform = .identity
+                }
             }
         }
     }
@@ -142,6 +214,11 @@ class ContentTableViewCell: UITableViewCell {
             self.alpha = 1
             self.transform = .identity
         })
+    }
+    
+    // MARK: - Getters
+    var currentTodo: Todo? {
+        return todo
     }
 }
 
