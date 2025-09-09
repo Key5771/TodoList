@@ -11,35 +11,13 @@ import SnapKit
 
 class ContentViewController: UIViewController {
     // MARK: - UI Components
-    private let headerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemBackground
-        return view
-    }()
-    
-    private let categoryLabel: UILabel = {
+    private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 24, weight: .bold)
-        label.textColor = .label
-        label.numberOfLines = 1
-        return label
-    }()
-    
-    private let taskLabel: UILabel = {
-        let label = UILabel()
+        label.text = "0 tasks"
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .secondaryLabel
-        label.text = "0 task"
+        label.textAlignment = .left
         return label
-    }()
-    
-    private let settingButton: UIButton = {
-        let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
-        let image = UIImage(systemName: "ellipsis.circle", withConfiguration: config)
-        button.setImage(image, for: .normal)
-        button.tintColor = .systemBlue
-        return button
     }()
     
     private let tableView: UITableView = {
@@ -48,6 +26,7 @@ class ContentViewController: UIViewController {
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.tableFooterView = UIView()
+        tableView.contentInsetAdjustmentBehavior = .automatic
         return tableView
     }()
     
@@ -62,6 +41,14 @@ class ContentViewController: UIViewController {
         button.layer.shadowOpacity = 0.3
         button.layer.shadowOffset = CGSize(width: 0, height: 4)
         button.layer.shadowRadius = 8
+        
+        // 아이콘 추가
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+        let image = UIImage(systemName: "plus", withConfiguration: config)
+        button.setImage(image, for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        button.tintColor = .white
+        
         return button
     }()
     
@@ -94,46 +81,77 @@ class ContentViewController: UIViewController {
     // MARK: - Properties
     var categoryName: String?
     private var taskCount: Int = 0
-    private var viewModel: ContentViewModel!
+    private var controller: NSFetchedResultsController<NSManagedObject>?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = ContentViewModel(categoryName: categoryName)
-        viewModel.delegate = self
+        setupNavigationBar()
         setupUI()
         setupConstraints()
         setupTableView()
         setupActions()
-        setupSwipeGesture()
+        loadData()
+        controller?.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.loadData()
-        categoryLabel.text = categoryName
-        navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        // NavigationBar 표시하고 Large Title 비활성화 (상세 화면)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .never
+        
         tableView.reloadData()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+    // MARK: - Setup Methods
+    private func setupNavigationBar() {
+        // Navigation Title을 카테고리 이름으로 설정 (개수 없이)
+        title = categoryName ?? "할 일 목록"
+        
+        // Large Title 비활성화 (상세 화면이므로)
+        navigationItem.largeTitleDisplayMode = .never
+        
+        // Back 버튼 커스터마이징 (기본 "Back" 텍스트 제거)
+        navigationController?.navigationBar.topItem?.backBarButtonItem = UIBarButtonItem(
+            title: "",
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        
+        // 설정 버튼을 Navigation Bar 우측에 추가
+        let settingButton = UIBarButtonItem(
+            image: UIImage(systemName: "ellipsis.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(settingButtonTapped)
+        )
+        settingButton.tintColor = .systemBlue
+        navigationItem.rightBarButtonItem = settingButton
+        
+        // Navigation Bar appearance 설정 (부모와 일관성 유지)
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .systemBackground
+        appearance.shadowColor = .clear
+        
+        // 일반 Title 폰트 설정
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor.label,
+            .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
+        ]
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
     }
     
-    // MARK: - Setup Methods
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(headerView)
-        headerView.addSubview(categoryLabel)
-        headerView.addSubview(taskLabel)
-        headerView.addSubview(settingButton)
-        
+        view.addSubview(subtitleLabel)
         view.addSubview(tableView)
         view.addSubview(createButton)
         
@@ -143,31 +161,13 @@ class ContentViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        headerView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(80)
-        }
-        
-        categoryLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(settingButton.snp.leading).offset(-8)
-        }
-        
-        taskLabel.snp.makeConstraints { make in
-            make.top.equalTo(categoryLabel.snp.bottom).offset(4)
-            make.leading.equalToSuperview().offset(16)
-        }
-        
-        settingButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.width.height.equalTo(32)
+        subtitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(createButton.snp.top).offset(-16)
         }
@@ -199,24 +199,24 @@ class ContentViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ContentTableViewCell.self, forCellReuseIdentifier: "contentCell")
-        viewModel.getFetchedResultsController()?.delegate = self
     }
     
     private func setupActions() {
         createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
-        settingButton.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
-    }
-    
-    private func setupSwipeGesture() {
-        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
-        swipeGesture.direction = .right
-        view.addGestureRecognizer(swipeGesture)
     }
     
     private func updateEmptyState() {
         let isEmpty = taskCount == 0
         emptyStateView.isHidden = !isEmpty
         tableView.isHidden = isEmpty
+        
+        // Subtitle 업데이트
+        updateSubtitle()
+    }
+    
+    private func updateSubtitle() {
+        // "5 tasks" 형태로 표시
+        subtitleLabel.text = "\(taskCount) task\(taskCount != 1 ? "s" : "")"
     }
     
     // MARK: - Actions
@@ -239,12 +239,6 @@ class ContentViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-        if gesture.direction == .right {
-            navigationController?.popViewController(animated: true)
-        }
-    }
-    
     private func showDeleteCategoryAlert() {
         let alert = UIAlertController(
             title: "카테고리 삭제",
@@ -253,13 +247,54 @@ class ContentViewController: UIViewController {
         )
         
         let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
-            self.viewModel.deleteCategory()
+            self.deleteCategory()
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
         present(alert, animated: true)
+    }
+    
+    private func deleteCategory() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let categoryName = categoryName else { return }
+        
+        let context = appDelegate.persistentContainer.viewContext
+        
+        // 먼저 해당 카테고리의 모든 할 일 삭제
+        let todoFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Todo")
+        todoFetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
+        
+        do {
+            let todos = try context.fetch(todoFetchRequest)
+            for todo in todos {
+                context.delete(todo)
+            }
+        } catch {
+            print("Error fetching todos for deletion: \(error)")
+            return
+        }
+        
+        // 카테고리 삭제
+        let categoryFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "TodoCategory")
+        categoryFetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
+        
+        do {
+            let categories = try context.fetch(categoryFetchRequest)
+            for category in categories {
+                context.delete(category)
+            }
+            
+            try context.save()
+            
+            DispatchQueue.main.async {
+                self.navigationController?.popViewController(animated: true)
+            }
+        } catch {
+            print("Error deleting category: \(error)")
+            showDeletionErrorAlert()
+        }
     }
     
     private func showDeletionErrorAlert() {
@@ -270,7 +305,6 @@ class ContentViewController: UIViewController {
         )
         
         let confirmAction = UIAlertAction(title: "확인", style: .default, handler: nil)
-        
         alert.addAction(confirmAction)
         present(alert, animated: true)
     }
@@ -279,7 +313,7 @@ class ContentViewController: UIViewController {
 // MARK: - UITableViewDelegate & DataSource
 extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let sections = viewModel.getFetchedResultsController()?.sections else {
+        guard let sections = controller?.sections else {
             fatalError("No sections in fetchedResultsController at ContentViewController")
         }
 
@@ -287,7 +321,6 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
         taskCount = sectionInfo.numberOfObjects
         
         DispatchQueue.main.async {
-            self.taskLabel.text = "\(self.taskCount) task\(self.taskCount != 1 ? "s" : "")"
             self.updateEmptyState()
         }
         
@@ -295,24 +328,13 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "contentCell", for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "contentCell", for: indexPath) as? ContentTableViewCell else {
+            return UITableViewCell()
+        }
         
-        if let content = viewModel.getFetchedResultsController()?.object(at: indexPath) as? Todo {
+        if let content = controller?.object(at: indexPath) as? Todo {
             if content.categoryName == categoryName {
-                cell.textLabel?.text = content.todoName
-                cell.textLabel?.font = .systemFont(ofSize: 16)
-                cell.textLabel?.textColor = .label
-                cell.selectionStyle = .none
-                
-                // 체크마크 아이콘 추가
-                let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
-                let checkImage = UIImage(systemName: "circle", withConfiguration: config)
-                let checkImageView = UIImageView(image: checkImage)
-                checkImageView.tintColor = .systemGray3
-                cell.accessoryView = checkImageView
-            } else {
-                cell.textLabel?.text = ""
-                cell.accessoryView = nil
+                cell.configure(with: content.todoName ?? "", isCompleted: false)
             }
         }
         
@@ -322,39 +344,61 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        // TODO: 할 일 완료/미완료 토글 기능 구현
-        if let cell = tableView.cellForRow(at: indexPath),
-           let accessoryView = cell.accessoryView as? UIImageView {
-            
-            let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
-            let isCompleted = accessoryView.image == UIImage(systemName: "checkmark.circle.fill", withConfiguration: config)
-            
-            if isCompleted {
-                accessoryView.image = UIImage(systemName: "circle", withConfiguration: config)
-                accessoryView.tintColor = .systemGray3
-            } else {
-                accessoryView.image = UIImage(systemName: "checkmark.circle.fill", withConfiguration: config)
-                accessoryView.tintColor = .systemGreen
-            }
+        // 완료/미완료 토글 기능
+        if let cell = tableView.cellForRow(at: indexPath) as? ContentTableViewCell {
+            cell.toggleCompletion()
         }
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            if viewModel.deleteTodo(at: indexPath) {
-                viewModel.loadData()
-                tableView.reloadData()
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            
+            let context = appDelegate.persistentContainer.viewContext
+            guard let todo = controller?.object(at: indexPath) else { return }
+            
+            do {
+                context.delete(todo)
+                try context.save()
+            } catch let error as NSError {
+                print("Could not Delete Todo. \(error), \(error.userInfo)")
             }
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 56
+        return 60
     }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension ContentViewController: NSFetchedResultsControllerDelegate {
+    private func loadData() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, 
+              let categoryName = categoryName else { return }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        managedContext.automaticallyMergesChangesFromParent = true
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Todo")
+        fetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
+        
+        controller = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: managedContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        controller?.delegate = self
+        
+        do {
+            try controller?.performFetch()
+        } catch let error as NSError {
+            print("Could not Content Fetch. \(error), \(error.userInfo)")
+        }
+    }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
@@ -392,29 +436,6 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
             if let indexPath = indexPath {
                 tableView.reloadRows(at: [indexPath], with: .fade)
             }
-        }
-    }
-}
-
-// MARK: - ContentViewModelDelegate
-extension ContentViewController: ContentViewModelDelegate {
-    func didDeleteCategorySuccessfully() {
-        DispatchQueue.main.async {
-            self.navigationController?.popViewController(animated: true)
-        }
-    }
-    
-    func didFailToDeleteCategory(error: String) {
-        DispatchQueue.main.async {
-            self.showDeletionErrorAlert()
-        }
-    }
-    
-    func didUpdateTaskCount(_ count: Int) {
-        DispatchQueue.main.async {
-            self.taskCount = count
-            self.taskLabel.text = "\(count) task\(count != 1 ? "s" : "")"
-            self.updateEmptyState()
         }
     }
 }
