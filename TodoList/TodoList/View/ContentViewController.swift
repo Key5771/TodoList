@@ -11,6 +11,15 @@ import SnapKit
 
 class ContentViewController: UIViewController {
     // MARK: - UI Components
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "0 tasks"
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .left
+        return label
+    }()
+    
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
@@ -98,7 +107,7 @@ class ContentViewController: UIViewController {
     
     // MARK: - Setup Methods
     private func setupNavigationBar() {
-        // Navigation Title을 카테고리 이름으로 설정
+        // Navigation Title을 카테고리 이름으로 설정 (개수 없이)
         title = categoryName ?? "할 일 목록"
         
         // Large Title 비활성화 (상세 화면이므로)
@@ -142,6 +151,7 @@ class ContentViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
+        view.addSubview(subtitleLabel)
         view.addSubview(tableView)
         view.addSubview(createButton)
         
@@ -151,8 +161,13 @@ class ContentViewController: UIViewController {
     }
     
     private func setupConstraints() {
+        subtitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(createButton.snp.top).offset(-16)
         }
@@ -195,19 +210,13 @@ class ContentViewController: UIViewController {
         emptyStateView.isHidden = !isEmpty
         tableView.isHidden = isEmpty
         
-        // Navigation title 업데이트
-        updateNavigationTitle()
+        // Subtitle 업데이트
+        updateSubtitle()
     }
     
-    private func updateNavigationTitle() {
-        // Navigation title에 할 일 개수 정보 포함
-        if let categoryName = categoryName {
-            if taskCount > 0 {
-                title = "\(categoryName) (\(taskCount))"
-            } else {
-                title = categoryName
-            }
-        }
+    private func updateSubtitle() {
+        // "5 tasks" 형태로 표시
+        subtitleLabel.text = "\(taskCount) task\(taskCount != 1 ? "s" : "")"
     }
     
     // MARK: - Actions
