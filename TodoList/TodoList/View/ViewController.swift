@@ -11,31 +11,6 @@ import SnapKit
 
 class ViewController: UIViewController {
     // MARK: - UI Components
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "카테고리"
-        label.font = .systemFont(ofSize: 28, weight: .bold)
-        label.textColor = .label
-        return label
-    }()
-    
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "할 일을 카테고리별로 정리하세요"
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.textColor = .secondaryLabel
-        return label
-    }()
-    
-    private let settingButton: UIButton = {
-        let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
-        let image = UIImage(systemName: "gearshape", withConfiguration: config)
-        button.setImage(image, for: .normal)
-        button.tintColor = .systemBlue
-        return button
-    }()
-    
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -45,6 +20,7 @@ class ViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .systemBackground
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.contentInsetAdjustmentBehavior = .automatic
         return collectionView
     }()
     
@@ -103,32 +79,79 @@ class ViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         setupUI()
         setupConstraints()
         setupCollectionView()
         setupActions()
+        loadData()
         controller?.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadData()
+        // NavigationBar를 표시하고 Large Title 활성화
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        
         collectionView.reloadData()
-        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // 스크롤 시 Large Title 동적 처리를 위한 설정
+        if let navigationController = navigationController {
+            navigationController.navigationBar.sizeToFit()
+        }
     }
     
     // MARK: - Setup Methods
+    private func setupNavigationBar() {
+        // Navigation Title 설정
+        title = "카테고리"
+        
+        // Large Title 설정
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        
+        // Navigation Bar 스타일 설정
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .systemBackground
+        appearance.shadowColor = .clear
+        
+        // Large Title 폰트 설정
+        appearance.largeTitleTextAttributes = [
+            .foregroundColor: UIColor.label,
+            .font: UIFont.systemFont(ofSize: 34, weight: .bold)
+        ]
+        
+        // 일반 Title 폰트 설정
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor.label,
+            .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
+        ]
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        
+        // 설정 버튼을 Navigation Bar 우측에 추가
+        let settingButton = UIBarButtonItem(
+            image: UIImage(systemName: "gearshape"),
+            style: .plain,
+            target: self,
+            action: #selector(settingButtonTapped)
+        )
+        settingButton.tintColor = .systemBlue
+        navigationItem.rightBarButtonItem = settingButton
+    }
+    
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(titleLabel)
-        view.addSubview(subtitleLabel)
-        view.addSubview(settingButton)
         view.addSubview(collectionView)
         view.addSubview(createButton)
         
@@ -138,26 +161,8 @@ class ViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalTo(settingButton.snp.leading).offset(-16)
-        }
-        
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalTo(settingButton.snp.leading).offset(-16)
-        }
-        
-        settingButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
-            make.trailing.equalToSuperview().offset(-20)
-            make.width.height.equalTo(44)
-        }
-        
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(30)
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(createButton.snp.top).offset(-20)
         }
@@ -192,11 +197,13 @@ class ViewController: UIViewController {
         
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        
+        // 스크롤 감지를 위한 델리게이트 추가
+        collectionView.delegate = self
     }
     
     private func setupActions() {
         createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
-        settingButton.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
     }
     
     private func updateEmptyState() {
@@ -217,7 +224,9 @@ class ViewController: UIViewController {
     
     @objc private func settingButtonTapped() {
         // TODO: 설정 화면 구현
-        print("설정 버튼 클릭 - 미구현")
+        let alert = UIAlertController(title: "설정", message: "설정 기능은 아직 구현되지 않았습니다.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
 }
 
@@ -340,6 +349,8 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
         guard let content = controller?.object(at: indexPath) as? TodoCategory else { return }
         let contentVC = ContentViewController()
         contentVC.categoryName = content.categoryName
+        
+        // 자연스러운 네비게이션 애니메이션을 위한 설정
         navigationController?.pushViewController(contentVC, animated: true)
     }
     
@@ -380,6 +391,14 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 16
+    }
+}
+
+// MARK: - UIScrollViewDelegate (Large Title 동적 처리)
+extension ViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // 스크롤에 따른 Large Title 동적 처리는 자동으로 처리됩니다
+        // 필요시 추가적인 커스터마이징 가능
     }
 }
 
