@@ -10,7 +10,6 @@
 		EA402DC5256687A400C51D85 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA402DC4256687A400C51D85 /* ViewModel.swift */; };
 		EA402DCE2566968500C51D85 /* CategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA402DCD2566968500C51D85 /* CategoryModel.swift */; };
 		EA4452B92E6F1AE1003BBD31 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = EA4452B82E6F1AE1003BBD31 /* SnapKit */; };
-		EA4452BB2E6F1AE1003BBD31 /* SnapKit-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = EA4452BA2E6F1AE1003BBD31 /* SnapKit-Dynamic */; };
 		EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2042539981D009286D4 /* AppDelegate.swift */; };
 		EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2062539981D009286D4 /* SceneDelegate.swift */; };
 		EA52F2092539981D009286D4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2082539981D009286D4 /* ViewController.swift */; };
@@ -118,7 +117,7 @@
 				EA52F21D25399820009286D4 /* TodoListTests */,
 				EA52F22825399820009286D4 /* TodoListUITests */,
 				EA52F2022539981D009286D4 /* Products */,
-				);
+			);
 			sourceTree = "<group>";
 		};
 		EA52F2022539981D009286D4 /* Products */ = {
@@ -331,9 +330,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		EA52F1FD2539981D009286D4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -536,8 +532,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = key.TodoList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -557,8 +557,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = key.TodoList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
