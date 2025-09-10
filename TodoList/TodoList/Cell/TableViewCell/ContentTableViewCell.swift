@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import CoreData
 
 protocol ContentTableViewCellDelegate: AnyObject {
     func didToggleCompletion(for cell: ContentTableViewCell)
@@ -70,7 +71,7 @@ class ContentTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        todoLabel.text = nil
+        todoLabel.attributedText = nil
         dateLabel.text = nil
         isCompleted = false
         todo = nil
@@ -118,13 +119,17 @@ class ContentTableViewCell: UITableViewCell {
     // MARK: - Public Methods
     func configure(with todo: Todo) {
         self.todo = todo
-        todoLabel.text = todo.displayName
+        
+        // 먼저 plain text로 설정 (취소선 제거)
+        let todoText = todo.todoName ?? "Untitled Task"
+        todoLabel.attributedText = NSAttributedString(string: todoText)
+        
         isCompleted = todo.isCompleted
         
         // 날짜 표시
         if let createDate = todo.createDate {
             let formatter = DateFormatter()
-            formatter.dateStyle = .none
+            formatter.dateStyle = .short
             formatter.timeStyle = .short
             dateLabel.text = "Created: \(formatter.string(from: createDate))"
         } else {
@@ -134,7 +139,7 @@ class ContentTableViewCell: UITableViewCell {
         updateCompletionState()
     }
     
-    @Deprecated("Use configure(with: Todo) instead")
+    @available(*, deprecated, message: "Use configure(with: Todo) instead")
     func configure(with todoText: String, isCompleted: Bool = false, priority: TaskPriority = .normal) {
         todoLabel.text = todoText
         self.isCompleted = isCompleted
@@ -173,9 +178,11 @@ class ContentTableViewCell: UITableViewCell {
             dateLabel.textColor = .quaternaryLabel
             
             // 취소선 적용
-            let attributedText = NSMutableAttributedString(string: todoLabel.text ?? "")
-            attributedText.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: attributedText.length))
-            todoLabel.attributedText = attributedText
+            if let currentText = todoLabel.attributedText?.string {
+                let attributedText = NSMutableAttributedString(string: currentText)
+                attributedText.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: attributedText.length))
+                todoLabel.attributedText = attributedText
+            }
             
         } else {
             // 미완료 상태
@@ -187,8 +194,10 @@ class ContentTableViewCell: UITableViewCell {
             todoLabel.textColor = .label
             dateLabel.textColor = .tertiaryLabel
             
-            // 취소선 제거
-            todoLabel.attributedText = NSAttributedString(string: todoLabel.text ?? "")
+            // 취소선 제거 - 현재 텍스트를 가져와서 새로운 plain AttributedString 생성
+            if let currentText = todoLabel.attributedText?.string {
+                todoLabel.attributedText = NSAttributedString(string: currentText)
+            }
         }
     }
     

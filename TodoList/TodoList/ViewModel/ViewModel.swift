@@ -70,7 +70,7 @@ extension ViewModel: ViewModelDelegate {
         
         do {
             try managedContext.save()
-            print("✅ Todo completion toggled: \(todo.displayName), completed: \(todo.isCompleted)")
+            print("✅ Todo completion toggled: \(todo.todoName ?? "Untitled"), completed: \(todo.isCompleted)")
         } catch let error as NSError {
             print("❌ Could not toggle Todo completion. \(error), \(error.userInfo)")
             
