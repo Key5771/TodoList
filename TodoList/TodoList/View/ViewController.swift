@@ -95,6 +95,13 @@ class ViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         
+        // 데이터 다시 fetch하고 UI 업데이트
+        do {
+            try controller?.performFetch()
+        } catch {
+            print("Error performing fetch: \(error)")
+        }
+        
         collectionView.reloadData()
     }
     
@@ -223,10 +230,10 @@ class ViewController: UIViewController {
     }
     
     @objc private func settingButtonTapped() {
-        // TODO: 설정 화면 구현
-        let alert = UIAlertController(title: "설정", message: "설정 기능은 아직 구현되지 않았습니다.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
-        present(alert, animated: true)
+        let settingsVC = SettingsViewController()
+        let navigationController = UINavigationController(rootViewController: settingsVC)
+        navigationController.modalPresentationStyle = .pageSheet
+        present(navigationController, animated: true)
     }
 }
 

@@ -51,21 +51,28 @@ extension ViewModel: ViewModelDelegate {
             todo.setValue(todoName, forKey: "todoName")
         }
         
-        // isCompleted 속성 설정 (기본값: false)
-        let completedValue = isCompleted ?? false
-        todo.setValue(completedValue, forKey: "isCompleted")
-        
-        // 완료된 할 일의 경우 completedDate도 설정
-        if completedValue {
-            todo.setValue(date, forKey: "completedDate")
+        // Todo 엔티티인 경우에만 isCompleted 속성 설정
+        if entityName == "Todo" {
+            let completedValue = isCompleted ?? false
+            todo.setValue(completedValue, forKey: "isCompleted")
+            
+            // 완료된 할 일의 경우 completedDate도 설정
+            if completedValue {
+                todo.setValue(date, forKey: "completedDate")
+            }
         }
         
         do {
             try managedContext.save()
-            print("✅ Todo saved successfully: \(todoName ?? "Untitled"), completed: \(completedValue)")
+            if entityName == "Todo" {
+                let completedValue = isCompleted ?? false
+                print("✅ Todo saved successfully: \(todoName ?? "Untitled"), completed: \(completedValue)")
+            } else {
+                print("✅ \(entityName) saved successfully: \(categoryName)")
+            }
             completion?(true, nil)
         } catch let error as NSError {
-            print("❌ Could not save Todo. \(error), \(error.userInfo)")
+            print("❌ Could not save \(entityName). \(error), \(error.userInfo)")
             completion?(false, "저장 중 오류가 발생했습니다: \(error.localizedDescription)")
         }
     }
