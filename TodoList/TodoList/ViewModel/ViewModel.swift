@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 protocol ViewModelDelegate {
-    func saveData(entityName: String, categoryName: String, todoName: String?, date: Date, isCompleted: Bool?)
+    func saveData(entityName: String, categoryName: String, todoName: String?, date: Date, isCompleted: Bool?, completion: ((Bool, String?) -> Void)?)
 }
 
 class ViewModel {
@@ -19,16 +19,32 @@ class ViewModel {
 }
 
 extension ViewModel: ViewModelDelegate {
-    func saveData(entityName: String, categoryName: String, todoName: String? = nil, date: Date, isCompleted: Bool? = nil) {
+    func saveData(entityName: String, categoryName: String, todoName: String? = nil, date: Date, isCompleted: Bool? = nil, completion: ((Bool, String?) -> Void)? = nil) {
         guard let appDelegate = appDelegate else { return }
         
         let managedContext = appDelegate.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         
+        // 카테고리 엔터티인 경우 중복 체크 수행
+        if entityName == "TodoCategory" {
+            let trimmedCategoryName = categoryName.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmedCategoryName.isEmpty {
+                print("❌ Category name cannot be empty")
+                completion?(false, "카테고리 이름을 입력해주세요.")
+                return
+            }
+            
+            if categoryExists(trimmedCategoryName) {
+                print("❌ Category '\(trimmedCategoryName)' already exists")
+                completion?(false, "'\(trimmedCategoryName)' 카테고리가 이미 존재합니다.\n다른 이름을 입력해주세요.")
+                return
+            }
+        }
+        
         guard let entity = NSEntityDescription.entity(forEntityName: entityName, in: managedContext) else { return }
         let todo = NSManagedObject(entity: entity, insertInto: managedContext)
         
-        todo.setValue(categoryName, forKey: "categoryName")
+        todo.setValue(categoryName.trimmingCharacters(in: .whitespacesAndNewlines), forKey: "categoryName")
         todo.setValue(date, forKey: "createDate")
         
         if let todoName = todoName {
@@ -47,8 +63,10 @@ extension ViewModel: ViewModelDelegate {
         do {
             try managedContext.save()
             print("✅ Todo saved successfully: \(todoName ?? "Untitled"), completed: \(completedValue)")
+            completion?(true, nil)
         } catch let error as NSError {
             print("❌ Could not save Todo. \(error), \(error.userInfo)")
+            completion?(false, "저장 중 오류가 발생했습니다: \(error.localizedDescription)")
         }
     }
     
@@ -120,5 +138,25 @@ extension ViewModel: ViewModelDelegate {
         let completed = todos.filter { $0.isCompleted }.count
         
         return (total: todos.count, pending: pending, completed: completed)
+    }
+    
+    // MARK: - Category Duplicate Check
+    func categoryExists(_ categoryName: String) -> Bool {
+        guard let appDelegate = appDelegate else { return false }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<TodoCategory>(entityName: "TodoCategory")
+        
+        // 대소문자를 구분하여 완전히 일치하는지 검사 및 공백 제거
+        let trimmedCategoryName = categoryName.trimmingCharacters(in: .whitespacesAndNewlines)
+        fetchRequest.predicate = NSPredicate(format: "categoryName == %@", trimmedCategoryName)
+        
+        do {
+            let results = try managedContext.fetch(fetchRequest)
+            return !results.isEmpty
+        } catch let error as NSError {
+            print("❌ Could not fetch categories for duplicate check. \(error), \(error.userInfo)")
+            return false
+        }
     }
 }
