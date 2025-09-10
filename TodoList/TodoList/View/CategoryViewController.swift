@@ -160,6 +160,7 @@ class CategoryViewController: UIViewController {
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
+    
 }
 
 // MARK: - Alert Methods
@@ -178,11 +179,20 @@ extension CategoryViewController {
             if self.todoCateogry != nil {
                 // 편집 모드 (현재는 미구현)
                 print("Edit mode - not implemented yet")
+                self.dismiss(animated: true, completion: nil)
             } else {
                 // 새 카테고리 저장
-                self.viewModel?.saveData(entityName: "TodoCategory", categoryName: category, date: date)
+                self.viewModel?.saveData(entityName: "TodoCategory", categoryName: category, date: date, completion: { success, errorMessage in
+                    DispatchQueue.main.async {
+                        if success {
+                            self.dismiss(animated: true, completion: nil)
+                        } else {
+                            // 에러 메시지 표시
+                            self.showErrorAlert(message: errorMessage ?? "알 수 없는 오류가 발생했습니다.")
+                        }
+                    }
+                })
             }
-            self.dismiss(animated: true, completion: nil)
         }
         
         let cancelButton = UIAlertAction(title: "취소", style: .cancel, handler: nil)
