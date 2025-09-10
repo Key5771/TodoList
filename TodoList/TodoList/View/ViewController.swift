@@ -225,8 +225,7 @@ class ViewController: UIViewController {
     // MARK: - Actions
     @objc private func createButtonTapped() {
         let categoryVC = CategoryViewController()
-        categoryVC.modalPresentationStyle = .fullScreen
-        present(categoryVC, animated: true, completion: nil)
+        navigationController?.pushViewController(categoryVC, animated: true)
     }
     
     @objc private func settingButtonTapped() {
