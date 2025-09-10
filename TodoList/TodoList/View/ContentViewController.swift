@@ -10,6 +10,27 @@ import CoreData
 import SnapKit
 
 class ContentViewController: UIViewController {
+    
+    // MARK: - Section Enum
+    private enum Section: Int, CaseIterable {
+        case pending = 0
+        case completed = 1
+        
+        var title: String {
+            switch self {
+            case .pending: return "할 일"
+            case .completed: return "완료된 일"
+            }
+        }
+        
+        var headerHeight: CGFloat {
+            switch self {
+            case .pending: return 40
+            case .completed: return 40
+            }
+        }
+    }
+    
     // MARK: - UI Components
     private let subtitleLabel: UILabel = {
         let label = UILabel()
@@ -21,12 +42,13 @@ class ContentViewController: UIViewController {
     }()
     
     private let tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.backgroundColor = .systemBackground
+        let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        tableView.tableFooterView = UIView()
         tableView.contentInsetAdjustmentBehavior = .automatic
+        tableView.sectionHeaderHeight = UITableView.automaticDimension
+        tableView.estimatedSectionHeaderHeight = 40
         return tableView
     }()
     
@@ -80,8 +102,10 @@ class ContentViewController: UIViewController {
     
     // MARK: - Properties
     var categoryName: String?
-    private var taskCount: Int = 0
-    private var controller: NSFetchedResultsController<NSManagedObject>?
+    private var pendingTodos: [Todo] = []
+    private var completedTodos: [Todo] = []
+    private var totalTaskCount: Int = 0
+    private var controller: NSFetchedResultsController<Todo>?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -102,7 +126,14 @@ class ContentViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
         
+        loadData()
         tableView.reloadData()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // 화면을 벗어날 때 확실히 저장
+        saveContext()
     }
     
     // MARK: - Setup Methods
@@ -149,7 +180,7 @@ class ContentViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         
         view.addSubview(subtitleLabel)
         view.addSubview(tableView)
@@ -199,6 +230,9 @@ class ContentViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ContentTableViewCell.self, forCellReuseIdentifier: "contentCell")
+        
+        // 섹션 헤더/푸터 설정
+        tableView.sectionFooterHeight = 0
     }
     
     private func setupActions() {
@@ -206,7 +240,7 @@ class ContentViewController: UIViewController {
     }
     
     private func updateEmptyState() {
-        let isEmpty = taskCount == 0
+        let isEmpty = totalTaskCount == 0
         emptyStateView.isHidden = !isEmpty
         tableView.isHidden = isEmpty
         
@@ -215,8 +249,64 @@ class ContentViewController: UIViewController {
     }
     
     private func updateSubtitle() {
-        // "5 tasks" 형태로 표시
-        subtitleLabel.text = "\(taskCount) task\(taskCount != 1 ? "s" : "")"
+        // "2 pending, 3 completed" 형태로 표시
+        let pendingCount = pendingTodos.count
+        let completedCount = completedTodos.count
+        
+        if totalTaskCount == 0 {
+            subtitleLabel.text = "No tasks"
+        } else if completedCount == 0 {
+            subtitleLabel.text = "\(pendingCount) task\(pendingCount != 1 ? "s" : "")"
+        } else if pendingCount == 0 {
+            subtitleLabel.text = "\(completedCount) completed"
+        } else {
+            subtitleLabel.text = "\(pendingCount) pending, \(completedCount) completed"
+        }
+    }
+    
+    private func organizeTodos() {
+        guard let controller = controller,
+              let fetchedObjects = controller.fetchedObjects else {
+            pendingTodos = []
+            completedTodos = []
+            totalTaskCount = 0
+            return
+        }
+        
+        // 완료 상태에 따라 분류
+        pendingTodos = fetchedObjects.filter { !$0.isCompleted }
+        completedTodos = fetchedObjects.filter { $0.isCompleted }
+        totalTaskCount = fetchedObjects.count
+        
+        // 정렬 (pending: 최신순, completed: 완료일 역순)
+        pendingTodos.sort { (todo1, todo2) in
+            guard let date1 = todo1.createDate, let date2 = todo2.createDate else {
+                return false
+            }
+            return date1 > date2
+        }
+        
+        completedTodos.sort { (todo1, todo2) in
+            guard let date1 = todo1.completedDate, let date2 = todo2.completedDate else {
+                return false
+            }
+            return date1 > date2
+        }
+    }
+    
+    private func saveContext() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
+        let context = appDelegate.persistentContainer.viewContext
+        
+        if context.hasChanges {
+            do {
+                try context.save()
+                print("✅ Context saved successfully")
+            } catch let error as NSError {
+                print("❌ Could not save context: \(error), \(error.userInfo)")
+            }
+        }
     }
     
     // MARK: - Actions
@@ -312,50 +402,113 @@ class ContentViewController: UIViewController {
 
 // MARK: - UITableViewDelegate & DataSource
 extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return Section.allCases.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let sections = controller?.sections else {
-            fatalError("No sections in fetchedResultsController at ContentViewController")
-        }
-
-        let sectionInfo = sections[section]
-        taskCount = sectionInfo.numberOfObjects
+        guard let sectionType = Section(rawValue: section) else { return 0 }
         
-        DispatchQueue.main.async {
-            self.updateEmptyState()
+        switch sectionType {
+        case .pending:
+            return pendingTodos.count
+        case .completed:
+            return completedTodos.count
         }
-        
-        return sectionInfo.numberOfObjects
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "contentCell", for: indexPath) as? ContentTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "contentCell", for: indexPath) as? ContentTableViewCell,
+              let sectionType = Section(rawValue: indexPath.section) else {
             return UITableViewCell()
         }
         
-        if let content = controller?.object(at: indexPath) as? Todo {
-            if content.categoryName == categoryName {
-                cell.configure(with: content.todoName ?? "", isCompleted: false)
-            }
+        let todo: Todo
+        switch sectionType {
+        case .pending:
+            todo = pendingTodos[indexPath.row]
+        case .completed:
+            todo = completedTodos[indexPath.row]
         }
+        
+        cell.delegate = self
+        cell.configure(with: todo)
         
         return cell
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let sectionType = Section(rawValue: section) else { return nil }
+        
+        let count: Int
+        switch sectionType {
+        case .pending:
+            count = pendingTodos.count
+        case .completed:
+            count = completedTodos.count
+        }
+        
+        // 해당 섹션에 데이터가 없으면 헤더를 표시하지 않음
+        if count == 0 {
+            return nil
+        }
+        
+        let headerView = UIView()
+        headerView.backgroundColor = .systemGroupedBackground
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "\(sectionType.title) (\(count))"
+        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        titleLabel.textColor = .label
+        
+        headerView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(20)
+            make.centerY.equalToSuperview()
+        }
+        
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard let sectionType = Section(rawValue: section) else { return 0 }
+        
+        let count: Int
+        switch sectionType {
+        case .pending:
+            count = pendingTodos.count
+        case .completed:
+            count = completedTodos.count
+        }
+        
+        // 해당 섹션에 데이터가 없으면 헤더 높이를 0으로 설정
+        if count == 0 {
+            return 0
+        }
+        
+        return sectionType.headerHeight
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        // 완료/미완료 토글 기능
-        if let cell = tableView.cellForRow(at: indexPath) as? ContentTableViewCell {
-            cell.toggleCompletion()
-        }
+        // 행 선택 시 아무 작업하지 않음 (체크박스만 사용)
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                  let sectionType = Section(rawValue: indexPath.section) else { return }
             
             let context = appDelegate.persistentContainer.viewContext
-            guard let todo = controller?.object(at: indexPath) else { return }
+            
+            let todo: Todo
+            switch sectionType {
+            case .pending:
+                todo = pendingTodos[indexPath.row]
+            case .completed:
+                todo = completedTodos[indexPath.row]
+            }
             
             do {
                 context.delete(todo)
@@ -367,7 +520,24 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        return 70 // 날짜 라벨을 위해 높이 증가
+    }
+}
+
+// MARK: - ContentTableViewCellDelegate
+extension ContentViewController: ContentTableViewCellDelegate {
+    func didToggleCompletion(for cell: ContentTableViewCell) {
+        // 즉시 Core Data에 저장
+        saveContext()
+        
+        // UI 업데이트
+        DispatchQueue.main.async {
+            self.organizeTodos()
+            self.updateEmptyState()
+            
+            // 애니메이션과 함께 테이블 뷰 리로드
+            self.tableView.reloadSections(IndexSet([0, 1]), with: .fade)
+        }
     }
 }
 
@@ -380,7 +550,7 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
         let managedContext = appDelegate.persistentContainer.viewContext
         managedContext.automaticallyMergesChangesFromParent = true
         
-        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Todo")
+        let fetchRequest = NSFetchRequest<Todo>(entityName: "Todo")
         fetchRequest.predicate = NSPredicate(format: "categoryName == %@", categoryName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
         
@@ -395,47 +565,21 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
         
         do {
             try controller?.performFetch()
+            organizeTodos()
+            updateEmptyState()
         } catch let error as NSError {
             print("Could not Content Fetch. \(error), \(error.userInfo)")
         }
     }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.beginUpdates()
+        // 변경 시작 시 특별한 작업 불필요 (섹션별 리로드를 사용하므로)
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.endUpdates()
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, 
-                   didChange anObject: Any, 
-                   at indexPath: IndexPath?, 
-                   for type: NSFetchedResultsChangeType, 
-                   newIndexPath: IndexPath?) {
-        
-        switch type {
-        case .insert:
-            if let newIndexPath = newIndexPath {
-                tableView.insertRows(at: [newIndexPath], with: .fade)
-            }
-        case .delete:
-            if let indexPath = indexPath {
-                tableView.deleteRows(at: [indexPath], with: .fade)
-            }
-        case .move:
-            if let indexPath = indexPath, let newIndexPath = newIndexPath {
-                tableView.deleteRows(at: [indexPath], with: .fade)
-                tableView.insertRows(at: [newIndexPath], with: .fade)
-            }
-        case .update:
-            if let indexPath = indexPath {
-                tableView.reloadRows(at: [indexPath], with: .fade)
-            }
-        @unknown default:
-            if let indexPath = indexPath {
-                tableView.reloadRows(at: [indexPath], with: .fade)
-            }
-        }
+        // 데이터 변경 완료 시 UI 업데이트
+        organizeTodos()
+        updateEmptyState()
+        tableView.reloadData()
     }
 }
