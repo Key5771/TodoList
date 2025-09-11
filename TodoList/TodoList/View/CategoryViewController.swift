@@ -104,7 +104,7 @@ class CategoryViewController: UIViewController {
         
         let date = Date()
         
-        viewModel?.saveData(entityName: "TodoCategory", categoryName: category, date: date) { [weak self] success, errorMessage in
+        viewModel?.saveData(entityName: "TodoCategory", categoryName: category, date: date, dueDate: nil) { [weak self] success, errorMessage in
             DispatchQueue.main.async {
                 if success {
                     let impact = UIImpactFeedbackGenerator(style: .light)

@@ -27,9 +27,25 @@ class AddTodoViewController: UIViewController {
         return textField
     }()
     
+    private let datePickerCell: UITableViewCell = {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.selectionStyle = .none
+        cell.backgroundColor = .clear
+        return cell
+    }()
+    
+    private let datePicker: UIDatePicker = {
+        let picker = UIDatePicker()
+        picker.datePickerMode = .date
+        picker.preferredDatePickerStyle = .compact
+        picker.minimumDate = Date()
+        return picker
+    }()
+    
     // MARK: - Properties
     var categoryName: String?
     var viewModel: ViewModel?
+    private var selectedDueDate: Date?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -89,6 +105,14 @@ class AddTodoViewController: UIViewController {
     private func setupActions() {
         todoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         todoTextField.delegate = self
+        
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
+        
+        datePickerCell.contentView.addSubview(datePicker)
+        datePicker.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(8)
+            make.centerY.equalToSuperview()
+        }
     }
     
     // MARK: - Actions
@@ -105,7 +129,7 @@ class AddTodoViewController: UIViewController {
         
         let date = Date()
         
-        viewModel?.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date, isCompleted: false) { [weak self] success, errorMessage in
+        viewModel?.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date, dueDate: selectedDueDate, isCompleted: false) { [weak self] success, errorMessage in
             DispatchQueue.main.async {
                 if success {
                     let impact = UIImpactFeedbackGenerator(style: .light)
@@ -123,6 +147,10 @@ class AddTodoViewController: UIViewController {
         updateSaveButtonState()
     }
     
+    @objc private func datePickerValueChanged() {
+        selectedDueDate = datePicker.date
+    }
+    
     // MARK: - Helper Methods
     private func updateSaveButtonState() {
         let hasText = !(todoTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
@@ -133,7 +161,7 @@ class AddTodoViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension AddTodoViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -141,27 +169,39 @@ extension AddTodoViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath)
-        cell.selectionStyle = .none
-        
-        todoTextField.removeFromSuperview()
-        cell.contentView.addSubview(todoTextField)
-        
-        todoTextField.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.centerY.equalToSuperview()
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath)
+            cell.selectionStyle = .none
+            
+            todoTextField.removeFromSuperview()
+            cell.contentView.addSubview(todoTextField)
+            
+            todoTextField.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(16)
+                make.trailing.equalToSuperview().offset(-16)
+                make.centerY.equalToSuperview()
+            }
+            
+            return cell
+        } else {
+            return datePickerCell
         }
-        
-        return cell
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "할 일 내용"
+        if section == 0 {
+            return "할 일 내용"
+        } else {
+            return "마감일"
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return "새로운 할 일을 추가하여 목표를 달성해보세요"
+        if section == 0 {
+            return nil
+        } else {
+            return "마감일을 설정하지 않으면 오늘로 설정됩니다"
+        }
     }
 }
 

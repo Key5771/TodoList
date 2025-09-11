@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 protocol ViewModelDelegate {
-    func saveData(entityName: String, categoryName: String, todoName: String?, date: Date, isCompleted: Bool?, completion: ((Bool, String?) -> Void)?)
+    func saveData(entityName: String, categoryName: String, todoName: String?, date: Date, dueDate: Date?, isCompleted: Bool?, completion: ((Bool, String?) -> Void)?)
 }
 
 class ViewModel {
@@ -19,7 +19,7 @@ class ViewModel {
 }
 
 extension ViewModel: ViewModelDelegate {
-    func saveData(entityName: String, categoryName: String, todoName: String? = nil, date: Date, isCompleted: Bool? = nil, completion: ((Bool, String?) -> Void)? = nil) {
+    func saveData(entityName: String, categoryName: String, todoName: String? = nil, date: Date, dueDate: Date? = nil, isCompleted: Bool? = nil, completion: ((Bool, String?) -> Void)? = nil) {
         guard let appDelegate = appDelegate else { return }
         
         let managedContext = appDelegate.persistentContainer.viewContext
@@ -51,10 +51,14 @@ extension ViewModel: ViewModelDelegate {
             todo.setValue(todoName, forKey: "todoName")
         }
         
-        // Todo 엔티티인 경우에만 isCompleted 속성 설정
+        // Todo 엔티티인 경우에만 isCompleted 속성과 dueDate 설정
         if entityName == "Todo" {
             let completedValue = isCompleted ?? false
             todo.setValue(completedValue, forKey: "isCompleted")
+            
+            // 마감일 설정 (제공되지 않으면 오늘로 설정)
+            let finalDueDate = dueDate ?? Date()
+            todo.setValue(finalDueDate, forKey: "dueDate")
             
             // 완료된 할 일의 경우 completedDate도 설정
             if completedValue {
