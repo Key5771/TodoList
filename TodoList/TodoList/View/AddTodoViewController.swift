@@ -11,115 +11,48 @@ import SnapKit
 
 class AddTodoViewController: UIViewController {
     // MARK: - UI Components
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.alwaysBounceVertical = true
-        scrollView.keyboardDismissMode = .onDrag
-        return scrollView
-    }()
-    
-    private let contentView: UIView = {
-        let view = UIView()
-        return view
-    }()
-    
-    private let headerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
-    
-    private let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        let config = UIImage.SymbolConfiguration(pointSize: 60, weight: .thin)
-        let image = UIImage(systemName: "plus.circle", withConfiguration: config)
-        imageView.image = image
-        imageView.tintColor = .systemBlue
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "새 할 일"
-        label.font = .systemFont(ofSize: 28, weight: .bold)
-        label.textAlignment = .center
-        label.textColor = .label
-        return label
-    }()
-    
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "새로운 할 일을 추가하여 목표를 달성해보세요"
-        label.font = .systemFont(ofSize: 17, weight: .regular)
-        label.textAlignment = .center
-        label.textColor = .secondaryLabel
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    private let formContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .secondarySystemBackground
-        view.layer.cornerRadius = 12
-        return view
-    }()
-    
-    private let inputLabel: UILabel = {
-        let label = UILabel()
-        label.text = "할 일 내용"
-        label.font = .systemFont(ofSize: 13, weight: .medium)
-        label.textColor = .secondaryLabel
-        return label
+    private let tableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.backgroundColor = .systemGroupedBackground
+        tableView.keyboardDismissMode = .onDrag
+        return tableView
     }()
     
     private let todoTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "예: 프로젝트 완료하기, 운동하기"
-        textField.borderStyle = .none
         textField.font = .systemFont(ofSize: 17)
         textField.clearButtonMode = .whileEditing
-        textField.backgroundColor = .systemBackground
-        textField.layer.cornerRadius = 10
-        textField.layer.borderWidth = 0.5
-        textField.layer.borderColor = UIColor.separator.cgColor
-        
-        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 50))
-        textField.leftView = leftPaddingView
-        textField.leftViewMode = .always
-        
-        let rightPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 50))
-        textField.rightView = rightPaddingView
-        textField.rightViewMode = .unlessEditing
-        
+        textField.backgroundColor = .clear
         return textField
     }()
     
-    private let createButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("저장", for: .normal)
-        button.backgroundColor = .systemBlue
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.white.withAlphaComponent(0.6), for: .disabled)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
-        button.layer.cornerRadius = 10
-        button.isEnabled = false
-        button.alpha = 0.6
-        return button
+    private let datePickerCell: UITableViewCell = {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.selectionStyle = .none
+        cell.backgroundColor = .clear
+        return cell
+    }()
+    
+    private let datePicker: UIDatePicker = {
+        let picker = UIDatePicker()
+        picker.datePickerMode = .date
+        picker.preferredDatePickerStyle = .compact
+        picker.minimumDate = Date()
+        return picker
     }()
     
     // MARK: - Properties
     var categoryName: String?
     var viewModel: ViewModel?
+    private var selectedDueDate: Date?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        setupUI()
-        setupConstraints()
+        setupTableView()
         setupActions()
-        setupKeyboardHandling()
         viewModel = ViewModel()
     }
     
@@ -138,7 +71,6 @@ class AddTodoViewController: UIViewController {
         title = "새 할 일"
         navigationController?.navigationBar.prefersLargeTitles = false
         
-        // 취소 버튼
         let cancelButton = UIBarButtonItem(
             title: "취소",
             style: .plain,
@@ -146,113 +78,41 @@ class AddTodoViewController: UIViewController {
             action: #selector(cancelButtonTapped)
         )
         navigationItem.leftBarButtonItem = cancelButton
+        
+        let saveButton = UIBarButtonItem(
+            title: "저장",
+            style: .done,
+            target: self,
+            action: #selector(saveButtonTapped)
+        )
+        saveButton.isEnabled = false
+        navigationItem.rightBarButtonItem = saveButton
     }
     
-    private func setupUI() {
+    private func setupTableView() {
         view.backgroundColor = .systemGroupedBackground
+        view.addSubview(tableView)
         
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        
-        contentView.addSubview(headerView)
-        headerView.addSubview(iconImageView)
-        headerView.addSubview(titleLabel)
-        headerView.addSubview(subtitleLabel)
-        
-        contentView.addSubview(formContainerView)
-        formContainerView.addSubview(inputLabel)
-        formContainerView.addSubview(todoTextField)
-        
-        contentView.addSubview(createButton)
-    }
-    
-    private func setupConstraints() {
-        scrollView.snp.makeConstraints { make in
+        tableView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
         
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-        }
-        
-        headerView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(40)
-            make.leading.trailing.equalToSuperview().inset(20)
-        }
-        
-        iconImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(80)
-        }
-        
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(iconImageView.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview()
-        }
-        
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
-        }
-        
-        formContainerView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom).offset(40)
-            make.leading.trailing.equalToSuperview().inset(20)
-        }
-        
-        inputLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
-        }
-        
-        todoTextField.snp.makeConstraints { make in
-            make.top.equalTo(inputLabel.snp.bottom).offset(8)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(50)
-            make.bottom.equalToSuperview().offset(-16)
-        }
-        
-        createButton.snp.makeConstraints { make in
-            make.top.equalTo(formContainerView.snp.bottom).offset(32)
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(50)
-            make.bottom.lessThanOrEqualToSuperview().offset(-40)
-        }
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TextFieldCell")
     }
     
     private func setupActions() {
-        createButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-        
-        // 실시간 텍스트 검증
         todoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         todoTextField.delegate = self
         
-        // Keyboard dismiss
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    private func setupKeyboardHandling() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow(_:)),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide(_:)),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+        datePickerCell.contentView.addSubview(datePicker)
+        datePicker.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(8)
+            make.centerY.equalToSuperview()
+        }
     }
     
     // MARK: - Actions
@@ -265,23 +125,18 @@ class AddTodoViewController: UIViewController {
               !todoName.isEmpty,
               let categoryName = categoryName else { return }
         
-        // 저장 중 상태로 변경
-        createButton.isEnabled = false
-        createButton.setTitle("저장 중...", for: .normal)
+        navigationItem.rightBarButtonItem?.isEnabled = false
         
         let date = Date()
         
-        viewModel?.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date, isCompleted: false) { [weak self] success, errorMessage in
+        viewModel?.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date, dueDate: selectedDueDate, isCompleted: false) { [weak self] success, errorMessage in
             DispatchQueue.main.async {
                 if success {
-                    // 성공 피드백
-                    self?.showSuccessFeedback {
-                        self?.navigationController?.popViewController(animated: true)
-                    }
+                    let impact = UIImpactFeedbackGenerator(style: .light)
+                    impact.impactOccurred()
+                    self?.navigationController?.popViewController(animated: true)
                 } else {
-                    // 에러 처리
-                    self?.createButton.isEnabled = true
-                    self?.createButton.setTitle("저장", for: .normal)
+                    self?.navigationItem.rightBarButtonItem?.isEnabled = true
                     self?.showCautionAlert(message: errorMessage ?? "알 수 없는 오류가 발생했습니다.")
                 }
             }
@@ -292,79 +147,78 @@ class AddTodoViewController: UIViewController {
         updateSaveButtonState()
     }
     
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
-    }
-    
-    @objc private func keyboardWillShow(_ notification: Notification) {
-        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
-              let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else {
-            return
-        }
-        
-        let keyboardHeight = keyboardFrame.cgRectValue.height
-        let safeAreaBottom = view.safeAreaInsets.bottom
-        
-        UIView.animate(withDuration: animationDuration) {
-            self.scrollView.contentInset.bottom = keyboardHeight - safeAreaBottom
-            self.scrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight - safeAreaBottom
-        }
-    }
-    
-    @objc private func keyboardWillHide(_ notification: Notification) {
-        guard let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else {
-            return
-        }
-        
-        UIView.animate(withDuration: animationDuration) {
-            self.scrollView.contentInset.bottom = 0
-            self.scrollView.verticalScrollIndicatorInsets.bottom = 0
-        }
+    @objc private func datePickerValueChanged() {
+        selectedDueDate = datePicker.date
     }
     
     // MARK: - Helper Methods
     private func updateSaveButtonState() {
         let hasText = !(todoTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        
-        UIView.animate(withDuration: 0.2) {
-            self.createButton.isEnabled = hasText
-            self.createButton.alpha = hasText ? 1.0 : 0.6
+        navigationItem.rightBarButtonItem?.isEnabled = hasText
+    }
+}
+
+// MARK: - UITableViewDataSource
+extension AddTodoViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath)
+            cell.selectionStyle = .none
+            
+            todoTextField.removeFromSuperview()
+            cell.contentView.addSubview(todoTextField)
+            
+            todoTextField.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(16)
+                make.trailing.equalToSuperview().offset(-16)
+                make.centerY.equalToSuperview()
+            }
+            
+            return cell
+        } else {
+            return datePickerCell
         }
     }
     
-    private func showSuccessFeedback(completion: @escaping () -> Void) {
-        // 성공 아이콘으로 변경
-        createButton.setTitle("완료!", for: .normal)
-        createButton.backgroundColor = .systemGreen
-        
-        // Haptic Feedback
-        let impact = UIImpactFeedbackGenerator(style: .light)
-        impact.impactOccurred()
-        
-        // 1초 후 완료
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            completion()
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "할 일 내용"
+        } else {
+            return "마감일"
         }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == 0 {
+            return nil
+        } else {
+            return "마감일을 설정하지 않으면 오늘로 설정됩니다"
+        }
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension AddTodoViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44
     }
 }
 
 // MARK: - UITextFieldDelegate
 extension AddTodoViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if createButton.isEnabled {
+        if navigationItem.rightBarButtonItem?.isEnabled == true {
             saveButtonTapped()
         }
         return true
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.layer.borderColor = UIColor.systemBlue.cgColor
-        textField.layer.borderWidth = 1.0
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        textField.layer.borderColor = UIColor.separator.cgColor
-        textField.layer.borderWidth = 0.5
     }
 }
 

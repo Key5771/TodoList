@@ -4,6 +4,7 @@
         <attribute name="categoryName" optional="YES" attributeType="String"/>
         <attribute name="completedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dueDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isCompleted" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="todoName" optional="YES" attributeType="String"/>
     </entity>

@@ -106,6 +106,7 @@ class ContentViewController: UIViewController {
     private var completedTodos: [Todo] = []
     private var totalTaskCount: Int = 0
     private var controller: NSFetchedResultsController<Todo>?
+    private var pendingUpdates: [() -> Void] = []
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -573,13 +574,72 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
     }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        // 변경 시작 시 특별한 작업 불필요 (섹션별 리로드를 사용하므로)
+        pendingUpdates.removeAll()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        
+        switch type {
+        case .update:
+            let todo = anObject as! Todo
+            
+            let oldPendingTodos = pendingTodos
+            let oldCompletedTodos = completedTodos
+            organizeTodos()
+            
+            var oldIndexPath: IndexPath?
+            var newIndexPath: IndexPath?
+            
+            if let oldIndex = oldPendingTodos.firstIndex(of: todo) {
+                oldIndexPath = IndexPath(row: oldIndex, section: 0)
+            } else if let oldIndex = oldCompletedTodos.firstIndex(of: todo) {
+                oldIndexPath = IndexPath(row: oldIndex, section: 1)
+            }
+            
+            if let newIndex = pendingTodos.firstIndex(of: todo) {
+                newIndexPath = IndexPath(row: newIndex, section: 0)
+            } else if let newIndex = completedTodos.firstIndex(of: todo) {
+                newIndexPath = IndexPath(row: newIndex, section: 1)
+            }
+            
+            pendingUpdates.append { [weak self] in
+                guard let self = self else { return }
+                
+                if let oldPath = oldIndexPath, let newPath = newIndexPath {
+                    if oldPath.section != newPath.section {
+                        self.tableView.moveRow(at: oldPath, to: newPath)
+                        if let cell = self.tableView.cellForRow(at: newPath) as? ContentTableViewCell {
+                            cell.configure(with: todo)
+                        }
+                    } else {
+                        if let cell = self.tableView.cellForRow(at: oldPath) as? ContentTableViewCell {
+                            UIView.transition(with: cell, duration: 0.3, options: .transitionCrossDissolve) {
+                                cell.configure(with: todo)
+                            }
+                        }
+                    }
+                }
+            }
+            
+        case .insert, .delete, .move:
+            pendingUpdates.append { [weak self] in
+                self?.organizeTodos()
+                self?.updateEmptyState()
+                self?.tableView.reloadData()
+            }
+        @unknown default:
+            break
+        }
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        // 데이터 변경 완료 시 UI 업데이트
-        organizeTodos()
-        updateEmptyState()
-        tableView.reloadData()
+        tableView.performBatchUpdates({
+            for update in pendingUpdates {
+                update()
+            }
+        }, completion: { _ in
+            self.updateEmptyState()
+        })
+        pendingUpdates.removeAll()
     }
 }

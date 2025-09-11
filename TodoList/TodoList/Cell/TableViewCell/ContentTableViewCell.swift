@@ -127,11 +127,11 @@ class ContentTableViewCell: UITableViewCell {
         isCompleted = todo.isCompleted
         
         // 날짜 표시
-        if let createDate = todo.createDate {
+        if let dueDate = todo.dueDate {
             let formatter = DateFormatter()
             formatter.dateStyle = .short
-            formatter.timeStyle = .short
-            dateLabel.text = "Created: \(formatter.string(from: createDate))"
+            formatter.timeStyle = .none
+            dateLabel.text = "Due: \(formatter.string(from: dueDate))"
         } else {
             dateLabel.text = ""
         }
