@@ -493,7 +493,22 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // 행 선택 시 아무 작업하지 않음 (체크박스만 사용)
+        
+        guard let sectionType = Section(rawValue: indexPath.section) else { return }
+        
+        let todo: Todo
+        switch sectionType {
+        case .pending:
+            guard indexPath.row < pendingTodos.count else { return }
+            todo = pendingTodos[indexPath.row]
+        case .completed:
+            guard indexPath.row < completedTodos.count else { return }
+            todo = completedTodos[indexPath.row]
+        }
+        
+        let editTodoVC = EditTodoViewController()
+        editTodoVC.todo = todo
+        navigationController?.pushViewController(editTodoVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {

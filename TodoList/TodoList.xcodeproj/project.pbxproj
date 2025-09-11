@@ -24,6 +24,7 @@
 		EA52F265253B129D009286D4 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F263253B129D009286D4 /* CategoryViewController.swift */; };
 		EA52F2D32541736C009286D4 /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA52F2D12541736C009286D4 /* ContentViewController.swift */; };
 		EA9C3CA5254A8F4000DE9475 /* AddTodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */; };
+		EAD3912747EAC4D8BB139EE0 /* EditTodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD3912747EAC4D8BB139EE1 /* EditTodoViewController.swift */; };
 		EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB86C625428C640037390E /* ContentTableViewCell.swift */; };
 		EAAA00012E8F0A0000000000 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAAA00002E8F0A0000000000 /* SettingsViewController.swift */; };
 		EAAA00032E8F0B0000000000 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAAA00022E8F0B0000000000 /* SettingsViewModel.swift */; };
@@ -69,6 +70,7 @@
 		EA52F263253B129D009286D4 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		EA52F2D12541736C009286D4 /* ContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
 		EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTodoViewController.swift; sourceTree = "<group>"; };
+		EAD3912747EAC4D8BB139EE1 /* EditTodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTodoViewController.swift; sourceTree = "<group>"; };
 		EAFB86C625428C640037390E /* ContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTableViewCell.swift; sourceTree = "<group>"; };
 		EAAA00002E8F0A0000000000 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		EAAA00022E8F0B0000000000 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				EA52F263253B129D009286D4 /* CategoryViewController.swift */,
 				EA52F2D12541736C009286D4 /* ContentViewController.swift */,
 				EA9C3CA3254A8F4000DE9475 /* AddTodoViewController.swift */,
+				EAD3912747EAC4D8BB139EE1 /* EditTodoViewController.swift */,
 				EAAA00002E8F0A0000000000 /* SettingsViewController.swift */,
 			);
 			path = View;
@@ -349,6 +352,7 @@
 				EA52F2052539981D009286D4 /* AppDelegate.swift in Sources */,
 				EA52F23E2539C088009286D4 /* MainCollectionViewCell.swift in Sources */,
 				EA9C3CA5254A8F4000DE9475 /* AddTodoViewController.swift in Sources */,
+				EAD3912747EAC4D8BB139EE0 /* EditTodoViewController.swift in Sources */,
 				EAFB86C825428C640037390E /* ContentTableViewCell.swift in Sources */,
 				EA52F2072539981D009286D4 /* SceneDelegate.swift in Sources */,
 				EA402DCE2566968500C51D85 /* CategoryModel.swift in Sources */,
