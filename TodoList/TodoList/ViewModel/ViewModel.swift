@@ -81,6 +81,35 @@ extension ViewModel: ViewModelDelegate {
         }
     }
     
+    // MARK: - Update Todo
+    func updateTodo(todo: Todo, todoName: String, dueDate: Date?, completion: ((Bool, String?) -> Void)? = nil) {
+        guard let appDelegate = appDelegate else {
+            completion?(false, "앱 델리게이트를 찾을 수 없습니다.")
+            return
+        }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        let trimmedTodoName = todoName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedTodoName.isEmpty {
+            completion?(false, "할 일 내용을 입력해주세요.")
+            return
+        }
+        
+        // 업데이트
+        todo.todoName = trimmedTodoName
+        todo.dueDate = dueDate ?? Date()
+        
+        do {
+            try managedContext.save()
+            print("✅ Todo updated successfully: \(trimmedTodoName)")
+            completion?(true, nil)
+        } catch let error as NSError {
+            print("❌ Could not update Todo. \(error), \(error.userInfo)")
+            completion?(false, "할 일 수정 중 오류가 발생했습니다: \(error.localizedDescription)")
+        }
+    }
+    
     // MARK: - Completion State Management
     func toggleTodoCompletion(todo: Todo) {
         guard let appDelegate = appDelegate else { return }

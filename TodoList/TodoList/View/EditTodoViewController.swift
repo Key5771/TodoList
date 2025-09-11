@@ -1,0 +1,247 @@
+//
+//  EditTodoViewController.swift
+//  TodoList
+//
+//  Created by Claude on 2025-01-13.
+//
+
+import UIKit
+import CoreData
+import SnapKit
+
+class EditTodoViewController: UIViewController {
+    // MARK: - UI Components
+    private let tableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.backgroundColor = .systemGroupedBackground
+        tableView.keyboardDismissMode = .onDrag
+        return tableView
+    }()
+    
+    private let todoTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "예: 프로젝트 완료하기, 운동하기"
+        textField.font = .systemFont(ofSize: 17)
+        textField.clearButtonMode = .whileEditing
+        textField.backgroundColor = .clear
+        return textField
+    }()
+    
+    private let datePickerCell: UITableViewCell = {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.selectionStyle = .none
+        cell.backgroundColor = .clear
+        return cell
+    }()
+    
+    private let datePicker: UIDatePicker = {
+        let picker = UIDatePicker()
+        picker.datePickerMode = .date
+        picker.preferredDatePickerStyle = .compact
+        picker.minimumDate = Date()
+        return picker
+    }()
+    
+    // MARK: - Properties
+    var todo: Todo?
+    var viewModel: ViewModel?
+    private var selectedDueDate: Date?
+    
+    // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupNavigationBar()
+        setupTableView()
+        setupActions()
+        setupInitialData()
+        viewModel = ViewModel()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        todoTextField.becomeFirstResponder()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        view.endEditing(true)
+    }
+    
+    // MARK: - Setup Methods
+    private func setupNavigationBar() {
+        title = "할 일 수정"
+        navigationController?.navigationBar.prefersLargeTitles = false
+        
+        let cancelButton = UIBarButtonItem(
+            title: "취소",
+            style: .plain,
+            target: self,
+            action: #selector(cancelButtonTapped)
+        )
+        navigationItem.leftBarButtonItem = cancelButton
+        
+        let saveButton = UIBarButtonItem(
+            title: "저장",
+            style: .done,
+            target: self,
+            action: #selector(saveButtonTapped)
+        )
+        navigationItem.rightBarButtonItem = saveButton
+    }
+    
+    private func setupTableView() {
+        view.backgroundColor = .systemGroupedBackground
+        view.addSubview(tableView)
+        
+        tableView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TextFieldCell")
+    }
+    
+    private func setupActions() {
+        todoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        todoTextField.delegate = self
+        
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
+        
+        datePickerCell.contentView.addSubview(datePicker)
+        datePicker.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(8)
+            make.centerY.equalToSuperview()
+        }
+    }
+    
+    private func setupInitialData() {
+        guard let todo = todo else { return }
+        
+        todoTextField.text = todo.todoName
+        
+        if let dueDate = todo.dueDate {
+            datePicker.date = dueDate
+            selectedDueDate = dueDate
+        } else {
+            datePicker.date = Date()
+            selectedDueDate = Date()
+        }
+        
+        updateSaveButtonState()
+    }
+    
+    // MARK: - Actions
+    @objc private func cancelButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func saveButtonTapped() {
+        guard let todoName = todoTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !todoName.isEmpty,
+              let todo = todo else { return }
+        
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        
+        viewModel?.updateTodo(todo: todo, todoName: todoName, dueDate: selectedDueDate) { [weak self] success, errorMessage in
+            DispatchQueue.main.async {
+                if success {
+                    let impact = UIImpactFeedbackGenerator(style: .light)
+                    impact.impactOccurred()
+                    self?.navigationController?.popViewController(animated: true)
+                } else {
+                    self?.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self?.showErrorAlert(message: errorMessage ?? "알 수 없는 오류가 발생했습니다.")
+                }
+            }
+        }
+    }
+    
+    @objc private func textFieldDidChange() {
+        updateSaveButtonState()
+    }
+    
+    @objc private func datePickerValueChanged() {
+        selectedDueDate = datePicker.date
+    }
+    
+    // MARK: - Helper Methods
+    private func updateSaveButtonState() {
+        let hasText = !(todoTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        navigationItem.rightBarButtonItem?.isEnabled = hasText
+    }
+}
+
+// MARK: - UITableViewDataSource
+extension EditTodoViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath)
+            cell.selectionStyle = .none
+            
+            todoTextField.removeFromSuperview()
+            cell.contentView.addSubview(todoTextField)
+            
+            todoTextField.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(16)
+                make.trailing.equalToSuperview().offset(-16)
+                make.centerY.equalToSuperview()
+            }
+            
+            return cell
+        } else {
+            return datePickerCell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "할 일 내용"
+        } else {
+            return "마감일"
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == 0 {
+            return nil
+        } else {
+            return "마감일을 변경할 수 있습니다"
+        }
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension EditTodoViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension EditTodoViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if navigationItem.rightBarButtonItem?.isEnabled == true {
+            saveButtonTapped()
+        }
+        return true
+    }
+}
+
+// MARK: - Alert Methods
+extension EditTodoViewController {
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        let okButton = UIAlertAction(title: "확인", style: .default, handler: nil)
+        alert.addAction(okButton)
+        present(alert, animated: true)
+    }
+}
