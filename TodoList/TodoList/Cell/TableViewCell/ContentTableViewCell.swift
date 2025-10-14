@@ -10,7 +10,7 @@ import SnapKit
 import CoreData
 
 protocol ContentTableViewCellDelegate: AnyObject {
-    func didToggleCompletion(for cell: ContentTableViewCell)
+    func didToggleCompletion(for todo: Todo)
 }
 
 class ContentTableViewCell: UITableViewCell {
@@ -150,18 +150,11 @@ class ContentTableViewCell: UITableViewCell {
     @objc private func checkButtonTapped() {
         // 애니메이션 효과
         animateCheckButton()
-        
-        // 완료 상태 토글
-        isCompleted.toggle()
-        
-        // Core Data 업데이트
+
+        // Delegate에 변경사항 알림 (Core Data 수정은 뷰컨트롤러에서 처리)
         if let todo = todo {
-            todo.isCompleted = isCompleted
-            todo.completedDate = isCompleted ? Date() : nil
+            delegate?.didToggleCompletion(for: todo)
         }
-        
-        // Delegate에 변경사항 알림
-        delegate?.didToggleCompletion(for: self)
     }
     
     private func updateCompletionState() {
