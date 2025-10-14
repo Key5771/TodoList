@@ -106,7 +106,6 @@ class ContentViewController: UIViewController {
     private var completedTodos: [Todo] = []
     private var totalTaskCount: Int = 0
     private var controller: NSFetchedResultsController<Todo>?
-    private var pendingUpdates: [() -> Void] = []
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -424,18 +423,26 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
               let sectionType = Section(rawValue: indexPath.section) else {
             return UITableViewCell()
         }
-        
+
         let todo: Todo
         switch sectionType {
         case .pending:
+            guard indexPath.row < pendingTodos.count else {
+                print("❌ Index out of bounds for pending todos in cellForRowAt")
+                return UITableViewCell()
+            }
             todo = pendingTodos[indexPath.row]
         case .completed:
+            guard indexPath.row < completedTodos.count else {
+                print("❌ Index out of bounds for completed todos in cellForRowAt")
+                return UITableViewCell()
+            }
             todo = completedTodos[indexPath.row]
         }
-        
+
         cell.delegate = self
         cell.configure(with: todo)
-        
+
         return cell
     }
     
@@ -493,19 +500,25 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
+
         guard let sectionType = Section(rawValue: indexPath.section) else { return }
-        
+
         let todo: Todo
         switch sectionType {
         case .pending:
-            guard indexPath.row < pendingTodos.count else { return }
+            guard indexPath.row < pendingTodos.count else {
+                print("❌ Index out of bounds for pending todos")
+                return
+            }
             todo = pendingTodos[indexPath.row]
         case .completed:
-            guard indexPath.row < completedTodos.count else { return }
+            guard indexPath.row < completedTodos.count else {
+                print("❌ Index out of bounds for completed todos")
+                return
+            }
             todo = completedTodos[indexPath.row]
         }
-        
+
         let editTodoVC = EditTodoViewController()
         editTodoVC.todo = todo
         navigationController?.pushViewController(editTodoVC, animated: true)
@@ -515,22 +528,31 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
         if editingStyle == .delete {
             guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
                   let sectionType = Section(rawValue: indexPath.section) else { return }
-            
+
             let context = appDelegate.persistentContainer.viewContext
-            
+
             let todo: Todo
             switch sectionType {
             case .pending:
+                guard indexPath.row < pendingTodos.count else {
+                    print("❌ Index out of bounds for pending todos")
+                    return
+                }
                 todo = pendingTodos[indexPath.row]
             case .completed:
+                guard indexPath.row < completedTodos.count else {
+                    print("❌ Index out of bounds for completed todos")
+                    return
+                }
                 todo = completedTodos[indexPath.row]
             }
-            
+
             do {
                 context.delete(todo)
                 try context.save()
+                print("✅ Todo deleted successfully")
             } catch let error as NSError {
-                print("Could not Delete Todo. \(error), \(error.userInfo)")
+                print("❌ Could not Delete Todo. \(error), \(error.userInfo)")
             }
         }
     }
@@ -542,18 +564,13 @@ extension ContentViewController: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - ContentTableViewCellDelegate
 extension ContentViewController: ContentTableViewCellDelegate {
-    func didToggleCompletion(for cell: ContentTableViewCell) {
-        // 즉시 Core Data에 저장
+    func didToggleCompletion(for todo: Todo) {
+        // Core Data 수정을 뷰컨트롤러에서 안전하게 처리
+        todo.isCompleted.toggle()
+        todo.completedDate = todo.isCompleted ? Date() : nil
+
         saveContext()
-        
-        // UI 업데이트
-        DispatchQueue.main.async {
-            self.organizeTodos()
-            self.updateEmptyState()
-            
-            // 애니메이션과 함께 테이블 뷰 리로드
-            self.tableView.reloadSections(IndexSet([0, 1]), with: .fade)
-        }
+        // UI 갱신은 NSFetchedResultsController 델리게이트에서 자동으로 처리됩니다.
     }
 }
 
@@ -588,73 +605,14 @@ extension ContentViewController: NSFetchedResultsControllerDelegate {
         }
     }
     
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        pendingUpdates.removeAll()
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
-        switch type {
-        case .update:
-            let todo = anObject as! Todo
-            
-            let oldPendingTodos = pendingTodos
-            let oldCompletedTodos = completedTodos
-            organizeTodos()
-            
-            var oldIndexPath: IndexPath?
-            var newIndexPath: IndexPath?
-            
-            if let oldIndex = oldPendingTodos.firstIndex(of: todo) {
-                oldIndexPath = IndexPath(row: oldIndex, section: 0)
-            } else if let oldIndex = oldCompletedTodos.firstIndex(of: todo) {
-                oldIndexPath = IndexPath(row: oldIndex, section: 1)
-            }
-            
-            if let newIndex = pendingTodos.firstIndex(of: todo) {
-                newIndexPath = IndexPath(row: newIndex, section: 0)
-            } else if let newIndex = completedTodos.firstIndex(of: todo) {
-                newIndexPath = IndexPath(row: newIndex, section: 1)
-            }
-            
-            pendingUpdates.append { [weak self] in
-                guard let self = self else { return }
-                
-                if let oldPath = oldIndexPath, let newPath = newIndexPath {
-                    if oldPath.section != newPath.section {
-                        self.tableView.moveRow(at: oldPath, to: newPath)
-                        if let cell = self.tableView.cellForRow(at: newPath) as? ContentTableViewCell {
-                            cell.configure(with: todo)
-                        }
-                    } else {
-                        if let cell = self.tableView.cellForRow(at: oldPath) as? ContentTableViewCell {
-                            UIView.transition(with: cell, duration: 0.3, options: .transitionCrossDissolve) {
-                                cell.configure(with: todo)
-                            }
-                        }
-                    }
-                }
-            }
-            
-        case .insert, .delete, .move:
-            pendingUpdates.append { [weak self] in
-                self?.organizeTodos()
-                self?.updateEmptyState()
-                self?.tableView.reloadData()
-            }
-        @unknown default:
-            break
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        // 단순하게 데이터 재구성 후 테이블뷰 리로드
+        organizeTodos()
+
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+            self.updateEmptyState()
         }
     }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.performBatchUpdates({
-            for update in pendingUpdates {
-                update()
-            }
-        }, completion: { _ in
-            self.updateEmptyState()
-        })
-        pendingUpdates.removeAll()
-    }
 }
+
