@@ -8,6 +8,7 @@
 import UIKit
 import CoreData
 import SnapKit
+import WidgetKit
 
 class AddTodoViewController: UIViewController {
     // MARK: - UI Components
@@ -132,6 +133,10 @@ class AddTodoViewController: UIViewController {
         viewModel?.saveData(entityName: "Todo", categoryName: categoryName, todoName: todoName, date: date, dueDate: selectedDueDate, isCompleted: false) { [weak self] success, errorMessage in
             DispatchQueue.main.async {
                 if success {
+                    // 위젯 새로고침
+                    WidgetCenter.shared.reloadTimelines(ofKind: "TodoListWidget")
+                    print("✅ Widget refreshed after adding todo")
+
                     let impact = UIImpactFeedbackGenerator(style: .light)
                     impact.impactOccurred()
                     self?.navigationController?.popViewController(animated: true)
