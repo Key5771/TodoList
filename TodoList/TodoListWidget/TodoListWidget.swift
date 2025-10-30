@@ -182,7 +182,6 @@ struct TodoListWidgetEntryView : View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding()
         .containerBackground(.fill.tertiary, for: .widget)
     }
 }
