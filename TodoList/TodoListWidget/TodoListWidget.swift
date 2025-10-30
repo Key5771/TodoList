@@ -173,13 +173,22 @@ struct TodoListWidgetEntryView : View {
                 }
                 Spacer()
             }
+            
+            Spacer()
 
-            // 업데이트 시간
+            // 업데이트 시간 및 새로고침 버튼
             HStack {
                 Spacer()
                 Text(entry.date, style: .time)
                     .font(.caption2)
                     .foregroundColor(.secondary)
+
+                Button(intent: RefreshIntent()) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.caption2)
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(.plain)
             }
         }
         .containerBackground(.fill.tertiary, for: .widget)
