@@ -8,6 +8,7 @@
 import UIKit
 import CoreData
 import SnapKit
+import WidgetKit
 
 class ContentViewController: UIViewController {
     
@@ -296,13 +297,17 @@ class ContentViewController: UIViewController {
     
     private func saveContext() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        
+
         let context = appDelegate.persistentContainer.viewContext
-        
+
         if context.hasChanges {
             do {
                 try context.save()
                 print("✅ Context saved successfully")
+
+                // 위젯 새로고침
+                WidgetCenter.shared.reloadTimelines(ofKind: "TodoListWidget")
+                print("✅ Widget refreshed")
             } catch let error as NSError {
                 print("❌ Could not save context: \(error), \(error.userInfo)")
             }
