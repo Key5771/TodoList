@@ -42,11 +42,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          error conditions that could cause the creation of the store to fail.
         */
         let container = NSPersistentContainer(name: "TodoList")
+
+        // App Group을 사용하여 위젯과 데이터 공유
+        let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.key.TodoList")?
+            .appendingPathComponent("TodoList.sqlite")
+
+        if let storeURL = storeURL {
+            let storeDescription = NSPersistentStoreDescription(url: storeURL)
+            container.persistentStoreDescriptions = [storeDescription]
+            print("✅ Using App Group store at: \(storeURL)")
+        } else {
+            print("❌ Failed to get App Group container URL")
+        }
+
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                 
+
                 /*
                  Typical reasons for an error here include:
                  * The parent directory does not exist, cannot be created, or disallows writing.
@@ -55,7 +68,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
+                print("❌ Core Data error: \(error), \(error.userInfo)")
                 fatalError("Unresolved error \(error), \(error.userInfo)")
+            } else {
+                print("✅ Main app Core Data loaded successfully")
             }
         })
         return container

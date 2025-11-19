@@ -1,15 +1,15 @@
 //
-//  CategoryViewController.swift
+//  EditTodoViewController.swift
 //  TodoList
 //
-//  Created by 김기현 on 2020/10/17.
+//  Created by Claude on 2025-01-13.
 //
 
 import UIKit
 import CoreData
 import SnapKit
 
-class CategoryViewController: UIViewController {
+class EditTodoViewController: UIViewController {
     // MARK: - UI Components
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -18,18 +18,34 @@ class CategoryViewController: UIViewController {
         return tableView
     }()
     
-    private let categoryNameTextField: UITextField = {
+    private let todoTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "예: 업무, 개인, 공부"
+        textField.placeholder = "예: 프로젝트 완료하기, 운동하기"
         textField.font = .systemFont(ofSize: 17)
         textField.clearButtonMode = .whileEditing
         textField.backgroundColor = .clear
         return textField
     }()
     
+    private let datePickerCell: UITableViewCell = {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.selectionStyle = .none
+        cell.backgroundColor = .clear
+        return cell
+    }()
+    
+    private let datePicker: UIDatePicker = {
+        let picker = UIDatePicker()
+        picker.datePickerMode = .date
+        picker.preferredDatePickerStyle = .compact
+        picker.minimumDate = Date()
+        return picker
+    }()
+    
     // MARK: - Properties
-    var todoCateogry: TodoCategory?
+    var todo: Todo?
     var viewModel: ViewModel?
+    private var selectedDueDate: Date?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -37,12 +53,13 @@ class CategoryViewController: UIViewController {
         setupNavigationBar()
         setupTableView()
         setupActions()
+        setupInitialData()
         viewModel = ViewModel()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        categoryNameTextField.becomeFirstResponder()
+        todoTextField.becomeFirstResponder()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -52,7 +69,7 @@ class CategoryViewController: UIViewController {
     
     // MARK: - Setup Methods
     private func setupNavigationBar() {
-        title = "새 카테고리"
+        title = "할 일 수정"
         navigationController?.navigationBar.prefersLargeTitles = false
         
         let cancelButton = UIBarButtonItem(
@@ -69,7 +86,6 @@ class CategoryViewController: UIViewController {
             target: self,
             action: #selector(saveButtonTapped)
         )
-        saveButton.isEnabled = false
         navigationItem.rightBarButtonItem = saveButton
     }
     
@@ -87,8 +103,32 @@ class CategoryViewController: UIViewController {
     }
     
     private func setupActions() {
-        categoryNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        categoryNameTextField.delegate = self
+        todoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        todoTextField.delegate = self
+        
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
+        
+        datePickerCell.contentView.addSubview(datePicker)
+        datePicker.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(8)
+            make.centerY.equalToSuperview()
+        }
+    }
+    
+    private func setupInitialData() {
+        guard let todo = todo else { return }
+        
+        todoTextField.text = todo.todoName
+        
+        if let dueDate = todo.dueDate {
+            datePicker.date = dueDate
+            selectedDueDate = dueDate
+        } else {
+            datePicker.date = Date()
+            selectedDueDate = Date()
+        }
+        
+        updateSaveButtonState()
     }
     
     // MARK: - Actions
@@ -97,14 +137,13 @@ class CategoryViewController: UIViewController {
     }
     
     @objc private func saveButtonTapped() {
-        guard let category = categoryNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !category.isEmpty else { return }
+        guard let todoName = todoTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !todoName.isEmpty,
+              let todo = todo else { return }
         
         navigationItem.rightBarButtonItem?.isEnabled = false
         
-        let date = Date()
-        
-        viewModel?.saveData(entityName: "TodoCategory", categoryName: category, date: date, dueDate: nil) { [weak self] success, errorMessage in
+        viewModel?.updateTodo(todo: todo, todoName: todoName, dueDate: selectedDueDate) { [weak self] success, errorMessage in
             DispatchQueue.main.async {
                 if success {
                     let impact = UIImpactFeedbackGenerator(style: .light)
@@ -122,17 +161,21 @@ class CategoryViewController: UIViewController {
         updateSaveButtonState()
     }
     
+    @objc private func datePickerValueChanged() {
+        selectedDueDate = datePicker.date
+    }
+    
     // MARK: - Helper Methods
     private func updateSaveButtonState() {
-        let hasText = !(categoryNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let hasText = !(todoTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         navigationItem.rightBarButtonItem?.isEnabled = hasText
     }
 }
 
 // MARK: - UITableViewDataSource
-extension CategoryViewController: UITableViewDataSource {
+extension EditTodoViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -140,39 +183,51 @@ extension CategoryViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath)
-        cell.selectionStyle = .none
-        
-        categoryNameTextField.removeFromSuperview()
-        cell.contentView.addSubview(categoryNameTextField)
-        
-        categoryNameTextField.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.centerY.equalToSuperview()
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath)
+            cell.selectionStyle = .none
+            
+            todoTextField.removeFromSuperview()
+            cell.contentView.addSubview(todoTextField)
+            
+            todoTextField.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(16)
+                make.trailing.equalToSuperview().offset(-16)
+                make.centerY.equalToSuperview()
+            }
+            
+            return cell
+        } else {
+            return datePickerCell
         }
-        
-        return cell
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "카테고리 이름"
+        if section == 0 {
+            return "할 일 내용"
+        } else {
+            return "마감일"
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return "할 일을 분류할 새로운 카테고리를 만들어보세요"
+        if section == 0 {
+            return nil
+        } else {
+            return "마감일을 변경할 수 있습니다"
+        }
     }
 }
 
 // MARK: - UITableViewDelegate
-extension CategoryViewController: UITableViewDelegate {
+extension EditTodoViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 44
     }
 }
 
 // MARK: - UITextFieldDelegate
-extension CategoryViewController: UITextFieldDelegate {
+extension EditTodoViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if navigationItem.rightBarButtonItem?.isEnabled == true {
             saveButtonTapped()
@@ -182,11 +237,11 @@ extension CategoryViewController: UITextFieldDelegate {
 }
 
 // MARK: - Alert Methods
-extension CategoryViewController {
+extension EditTodoViewController {
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
         let okButton = UIAlertAction(title: "확인", style: .default, handler: nil)
         alert.addAction(okButton)
-        present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
 }
